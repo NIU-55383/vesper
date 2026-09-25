@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#19141e"><title>晚祷 VESPER · 奶龙的教堂谜室</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' rx='12' fill='%23251d2c'/%3E%3Cpath d='M30 10v40M17 24h26' stroke='%23c2ac83' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="game-ui.css"><link rel="stylesheet" href="vesper/style.css">
+<script type="importmap">{"imports":{"three":"./vesper/vendor/three.module.js","three/addons/":"./vesper/vendor/addons/"}}</script>
+</head>
+<body>
+<canvas id="world" aria-label="可探索的三维教堂，WASD 移动，拖动旋转视角，E 互动" tabindex="0"></canvas>
+<div class="film-grain" aria-hidden="true"></div><div class="vignette" aria-hidden="true"></div>
+<header class="topbar">
+ <a class="wordmark" href="vesper.html" aria-label="晚祷首页"><span class="brand-cross">✝</span><span>VESPER<small>晚 祷</small></span></a>
+ <div class="location"><span class="tiny-dot"></span>KENSINGTON · LONDON <span class="location-divider">/</span> 17:46</div>
+ <nav aria-label="游戏工具"><button id="journalButton" class="icon-button" title="探索手记 J" aria-label="探索手记"><svg viewBox="0 0 24 24"><path d="M5 4h13v16H5a2 2 0 0 1 0-4h13M5 4a2 2 0 0 0-2 2v12M8 8h6M8 11h5"/></svg></button><button id="soundButton" class="icon-button" title="声音" aria-label="打开声音"><svg viewBox="0 0 24 24"><path d="m4 10 4 0 5-4v12l-5-4H4zM17 8q6 4 0 8"/><path class="sound-slash" d="m4 3 16 18"/></svg></button><button id="settingsButton" class="icon-button" title="设置与操作 Esc" aria-label="设置与操作"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M9 4v6M16 14v6"/></svg></button></nav>
+</header>
+<main id="intro" class="intro">
+ <div class="chapter-label"><span>01</span> THE SILENT SANCTUARY</div>
+ <h1>醒于<br>无声之地<span>晚祷 · 雾中的回声</span></h1>
+ <p class="intro-copy">最后一缕光，停在十字架上。<br>跟随奶龙，寻找被这座教堂遗忘的出口。</p>
+ <div class="intro-actions"><button id="startButton" class="primary-button" disabled><span id="startLabel">正在唤醒教堂…</span><span>↗</span></button><button id="modelButton" class="text-button">认识奶龙 <span>↗</span></button></div>
+ <div class="intro-meta"><span>第三人称探索</span><i></i><span>光影 · 乐音 · 谜室</span><i></i><span>约 10 分钟</span></div>
+</main>
+<div id="loading" class="loading"><span></span><small>搭建光与尘埃</small></div>
+<section id="hud" class="hud" hidden>
+ <div class="objective"><span class="eyebrow">当前线索 / OBJECTIVE</span><p id="objectiveText"></p><div class="progress-dots" id="progressDots"></div></div>
+ <div id="inventory" class="inventory" aria-label="随身物品"></div>
+ <button id="interactButton" class="interact-prompt" hidden><kbd>E</kbd><span id="interactLabel">查看</span><span class="interact-arrow">↗</span></button>
+ <div class="player-card"><div id="playerAvatar"></div><div><strong>奶龙的旅人</strong><span>在线 / Online · 单人探索</span></div></div>
+ <div class="controls-strip"><span><kbd>W A S D</kbd> 行走</span><span>拖动鼠标 · 环顾</span><span><kbd>E</kbd> 互动</span><span><kbd>J</kbd> 手记</span></div>
+ <div class="compass"><span>N</span><i id="compassNeedle">↑</i><small>圣坛</small></div>
+ <div id="touchControls" class="touch-controls"><div id="joystick" aria-label="拖动摇杆行走"><i id="joystickKnob"></i></div><button id="touchInteract" aria-label="互动">E</button></div>
+</section>
+<footer id="introFooter" class="intro-footer"><span>一场关于失落与微光的探索</span><span>灵感源于 Kensington United Reformed Church <span class="footer-star">✧</span></span></footer>
+<div class="model-bar"><span>奶龙 <small>NAILONG · 3D STUDY</small></span><button id="modelWalk">播放行走</button><button id="modelBack">返回教堂 ↗</button></div>
+<div id="toast" class="toast" role="status"></div>
+<dialog id="panel" class="panel" aria-labelledby="panelTitle"><button id="panelClose" class="panel-close" aria-label="关闭">×</button><p id="panelEyebrow" class="eyebrow">VESPER · EXPLORATION</p><h2 id="panelTitle"></h2><div id="panelBody"></div></dialog>
+<div id="avatarPicker" hidden></div><input id="playerName" value="旅人" hidden>
+<div id="fatal" class="fatal" hidden><h2>暂时无法打开三维场景</h2><p id="fatalText"></p><button onclick="location.reload()">重新加载</button><a href="/">返回晚祷首页</a></div>
+<script src="avatar-data.js"></script><script src="social-data.js"></script><script src="game-audio.js"></script><script src="game-ui.js"></script>
+<script type="module" src="vesper/main.js"></script>
+</body></html>

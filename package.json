@@ -1,0 +1,17 @@
+{
+  "name": "vesper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "晚祷 VESPER — a standalone third-person church escape game",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test server-test.cjs vesper/puzzle.test.mjs",
+    "test:server": "node --test server-test.cjs",
+    "test:browser": "node vesper/browser-test.cjs",
+    "test:character": "node vesper/character-review.cjs",
+    "test:gait": "node vesper/gait-check.cjs"
+  }
+}
