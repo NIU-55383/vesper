@@ -2,12 +2,12 @@ import * as THREE from 'three';
 import { createSoftUnionGeometry } from './sculpt-union.js';
 import { createHandGeometry, createFootGeometry } from './character-extremities.js';
 
-// Revision 6 is a new sculpt from the white-background, hands-on-belly reference.
+// Revision 7 refines the existing sculpt against the white-background, hands-on-belly reference.
 // Neutral proportions are authored directly; the subdued walk is layered afterwards.
 let skinTemplate=null;
 export function createNailong(){
   const root=new THREE.Group();root.name='Nailong';
-  root.userData={character:'奶龙',modelVersion:6,forward:'+Z',units:'metres',reference:'hands-on-belly still'};
+  root.userData={character:'奶龙',modelVersion:7,forward:'+Z',units:'metres',reference:'hands-on-belly still'};
   const rig=new THREE.Group();rig.name='MotionRig';root.add(rig);
   const bones=[];
   function bone(parent,name,x,y,z){const b=new THREE.Bone();b.name=name;b.position.set(x,y,z);parent.add(b);bones.push(b);return b;}
@@ -16,8 +16,8 @@ export function createNailong(){
   const arms=[];
   for(const [side,key] of [[-1,'L'],[1,'R']]){
     const shoulder=bone(spine,'Arm'+key,side*.275,.410,-.020);
-    const elbow=bone(shoulder,'Elbow'+key,side*.285,-.310,.175);
-    const wrist=bone(elbow,'Wrist'+key,-side*.280,-.045,.440);
+    const elbow=bone(shoulder,'Elbow'+key,side*.230,-.335,.175);
+    const wrist=bone(elbow,'Wrist'+key,-side*.225,-.030,.405);
     arms.push({side,shoulder,elbow,wrist,index:side<0?3:6});
   }
   const legY=.610,legX=.245,kneeDrop=.265,ankleDrop=.225,legRigs=[];
@@ -28,8 +28,8 @@ export function createNailong(){
   }
   const leftArm=arms[0].shoulder,rightArm=arms[1].shoulder,leftLeg=legRigs[0].leg,rightLeg=legRigs[1].leg;
   const yellow=new THREE.Color('#f4bd34'),cream=new THREE.Color('#efd39a'),olive=new THREE.Color('#5b5234');
-  const skinMaterial=new THREE.MeshPhysicalMaterial({name:'Soft golden skin',color:0xffffff,vertexColors:true,roughness:.58,metalness:0,clearcoat:.025,clearcoatRoughness:.6});
-  const faceSkin=new THREE.MeshPhysicalMaterial({name:'Golden eyelid skin',color:yellow,roughness:.58});
+  const skinMaterial=new THREE.MeshPhysicalMaterial({name:'Soft golden skin',color:0xffffff,vertexColors:true,roughness:.64,metalness:0,clearcoat:.015,clearcoatRoughness:.6});
+  const faceSkin=new THREE.MeshPhysicalMaterial({name:'Golden eyelid skin',color:yellow,roughness:.64});
   function profileSampler(points) {
     const dimensions = points[0].length - 1;
     const slopes = Array.from({ length: dimensions }, (_, dimension) => {
@@ -74,21 +74,21 @@ export function createNailong(){
   }
 
   const shapeRows=[
-    [.560,.001,.116,.114],[.620,.240,.335,-.155],
+    [.560,.001,.116,.114],[.620,.285,.355,-.175],
     [.760,.416,.555,-.294],[.970,.492,.636,-.346],
-    [1.140,.475,.622,-.326],[1.300,.405,.515,-.280],
-    [1.435,.323,.350,-.240],[1.545,.268,.235,-.207],
-    [1.620,.244,.229,-.188],[1.710,.229,.254,-.178],
+    [1.140,.475,.622,-.326],[1.300,.412,.515,-.280],
+    [1.435,.338,.358,-.240],[1.545,.285,.252,-.207],
+    [1.620,.258,.240,-.188],[1.710,.238,.257,-.178],
     [1.795,.222,.272,-.166],[1.867,.213,.279,-.140],
     [1.940,.161,.218,-.089],[1.986,.073,.124,-.010],
     [2.000,.0001,.060,.0598]
   ];
   const sampleBody=sculptProfile(shapeRows.map(([y,w,f,b])=>[y,w*w,((f-b)/2)**2,(f+b)/2]));
-  function profile(y){const [w,d,c]=sampleBody(THREE.MathUtils.clamp(y,.56,2));return [Math.sqrt(Math.max(w,1e-8)),Math.sqrt(Math.max(d,1e-8)),c+.085*THREE.MathUtils.smoothstep(y,1.435,1.80)];}
+  function profile(y){const [w,d,c]=sampleBody(THREE.MathUtils.clamp(y,.56,2));return [Math.sqrt(Math.max(w,1e-8)),Math.sqrt(Math.max(d,1e-8)),c+.050*THREE.MathUtils.smoothstep(y,1.435,1.80)];}
   function muzzle(x,y){
     // A local soft lip wedge, rather than pushing the whole face forward.
-    return .028*Math.exp(-Math.pow(x/.105,2)-Math.pow((y-1.784)/.034,2))+
-      .006*Math.exp(-Math.pow(x/.095,2)-Math.pow((y-1.752)/.038,2));
+    return .018*Math.exp(-Math.pow(x/.105,2)-Math.pow((y-1.784)/.034,2))+
+      .004*Math.exp(-Math.pow(x/.095,2)-Math.pow((y-1.752)/.038,2));
   }
   function frontSurface(x,y){const [w,d,c]=profile(y);return c+d*Math.sqrt(Math.max(0,1-(x/w)**2))+muzzle(x,y);}
   function bellyUV(x,y,z){
@@ -110,40 +110,54 @@ export function createNailong(){
   // Reconstructed folded arms have a genuine elbow and a forward-facing forearm.
   function armField(side,index){
     const landmarks=[
-      [side*.275,1.410,-.020,.118],[side*.421,1.333,.012,.115],
-      [side*.535,1.195,.072,.111],[side*.560,1.100,.155,.108],
-      [side*.465,1.052,.398,.088],[side*.280,1.055,.595,.058]
+      [side*.275,1.410,-.020,.118],[side*.398,1.333,.012,.115],
+      [side*.490,1.185,.072,.111],[side*.505,1.075,.155,.108],
+      [side*.434,1.025,.365,.088],[side*.280,1.045,.560,.058]
     ];
     const curve=new THREE.CatmullRomCurve3(landmarks.map(p=>new THREE.Vector3(...p.slice(0,3))),false,'catmullrom',.35);
     const radiusAt=profileSampler(landmarks.map((p,i)=>[i/(landmarks.length-1),p[3]]));
-    const q=new THREE.Vector3(),qm=new THREE.Vector3(),qp=new THREE.Vector3();
-    const segments=[],steps=20;
-    for(let i=0;i<steps;i++){
-      const a=curve.getPoint(i/steps),b=curve.getPoint((i+1)/steps),d=b.clone().sub(a);
-      const f=i/steps*(landmarks.length-1),j=Math.min(landmarks.length-2,Math.floor(f));
-      const f2=(i+1)/steps*(landmarks.length-1),j2=Math.min(landmarks.length-2,Math.floor(f2));
-      const r=THREE.MathUtils.lerp(landmarks[j][3],landmarks[j+1][3],f-j),r2=THREE.MathUtils.lerp(landmarks[j2][3],landmarks[j2+1][3],f2-j2);
-      segments.push({a,d,len:d.lengthSq(),r,dr:r2-r,i});
-    }
+    const q=new THREE.Vector3(),steps=20;
+    const normalX=side*Math.sin(.45),normalZ=Math.cos(.45);
+    const wristMetric=t=>{
+      const flatten=1-.46*THREE.MathUtils.smoothstep(t,.82,1);
+      return 1/(flatten*flatten)-1;
+    };
+    const samples=Array.from({length:steps+1},(_,i)=>{
+      const t=i/steps,p=curve.getPoint(t);
+      return {x:p.x,y:p.y,z:p.z,r:radiusAt(t)[0],metric:wristMetric(t)};
+    });
+    const values=new Float64Array(steps+1);
     function nearest(x,y,z){
-      let best=Infinity,tbest=0,bestSq=0,bestRadius=0;
-      for(const s of segments){
-        const px=x-s.a.x,py=y-s.a.y,pz=z-s.a.z,t=THREE.MathUtils.clamp((px*s.d.x+py*s.d.y+pz*s.d.z)/s.len,0,1);
-        const dx=px-t*s.d.x,dy=py-t*s.d.y,dz=pz-t*s.d.z,radius=s.r+s.dr*t,dsq=dx*dx+dy*dy+dz*dz,rank=dsq-radius*radius;
-        if(rank<best){best=rank;bestSq=dsq;bestRadius=radius;tbest=(s.i+t)/steps;}
+      // Minimize the actual varying-radius swept surface, including the palm
+      // flattening. A centreline-only Newton step can jump to a different branch
+      // at the inner elbow and leave a discontinuous signed-distance field.
+      function distanceAt(t){
+        curve.getPoint(t,q);
+        const dx=x-q.x,dy=y-q.y,dz=z-q.z,normal=dx*normalX+dz*normalZ;
+        return Math.sqrt(dx*dx+dy*dy+dz*dz+normal*normal*wristMetric(t))-radiusAt(t)[0];
       }
-      let t=tbest;
-      for(let iteration=0;iteration<4;iteration++){
-        if(t<.0001||t>.9999)break;
-        const e=Math.min(.0007,t,1-t);curve.getPoint(t,q);curve.getPoint(t-e,qm);curve.getPoint(t+e,qp);
-        const dx=(qp.x-qm.x)/(2*e),dy=(qp.y-qm.y)/(2*e),dz=(qp.z-qm.z)/(2*e);
-        const ddx=(qp.x-2*q.x+qm.x)/(e*e),ddy=(qp.y-2*q.y+qm.y)/(e*e),ddz=(qp.z-2*q.z+qm.z)/(e*e);
-        const ax=q.x-x,ay=q.y-y,az=q.z-z,den=dx*dx+dy*dy+dz*dz+ax*ddx+ay*ddy+az*ddz;
-        if(Math.abs(den)<1e-8)break;
-        const delta=THREE.MathUtils.clamp((ax*dx+ay*dy+az*dz)/den,-.05,.05),next=THREE.MathUtils.clamp(t-delta,0,1);
-        t=next;if(Math.abs(delta)<1e-7)break;
+      let best=Infinity,tbest=0;
+      for(let i=0;i<=steps;i++){
+        const p=samples[i],dx=x-p.x,dy=y-p.y,dz=z-p.z,normal=dx*normalX+dz*normalZ;
+        const value=Math.sqrt(dx*dx+dy*dy+dz*dz+normal*normal*p.metric)-p.r;
+        values[i]=value;if(value<best){best=value;tbest=i/steps;}
       }
-      curve.getPoint(t,q);return [Math.hypot(x-q.x,y-q.y,z-q.z)-radiusAt(t)[0],t];
+      // Check every sampled local minimum: acute bends can have two candidates.
+      // The bounded search cannot overshoot its branch, and the final comparison
+      // uses the same objective as the sampling and gradient calculations.
+      const ratio=(Math.sqrt(5)-1)/2;
+      for(let i=0;i<=steps;i++){
+        if((i>0&&values[i]>values[i-1])||(i<steps&&values[i]>values[i+1]))continue;
+        let lo=Math.max(0,(i-1)/steps),hi=Math.min(1,(i+1)/steps);
+        let a=hi-ratio*(hi-lo),b=lo+ratio*(hi-lo),fa=distanceAt(a),fb=distanceAt(b);
+        for(let iteration=0;iteration<24;iteration++){
+          if(fa<fb){hi=b;b=a;fb=fa;a=hi-ratio*(hi-lo);fa=distanceAt(a);}
+          else{lo=a;a=b;fa=fb;b=lo+ratio*(hi-lo);fb=distanceAt(b);}
+        }
+        if(fa<best){best=fa;tbest=a;}
+        if(fb<best){best=fb;tbest=b;}
+      }
+      return [best,tbest];
     }
     return {kind:'arm',side,index,nearest,distance(x,y,z){
       if(y<.89||y>1.61||x*side<.13||x*side>.72||z<-.18||z>.73)return .10+Math.max(0,.89-y,y-1.61,.13-x*side,x*side-.72,-.18-z,z-.73);
@@ -151,13 +165,13 @@ export function createNailong(){
     }};
   }
   fields.push(armField(-1,3),armField(1,6));
-  const sampleLeg=profileSampler([[.035,.028,.045],[.070,.042,.056],[.100,.046,.059],[.180,.055,.070],[.315,.090,.102],[.450,.129,.137],[.605,.160,.165],[.690,.128,.140],[.795,.001,.001]]);
+  const sampleLeg=profileSampler([[.035,.028,.045],[.070,.042,.056],[.100,.046,.059],[.180,.055,.070],[.315,.090,.102],[.450,.129,.137],[.605,.160,.165],[.690,.177,.181],[.795,.145,.150],[.880,.001,.001]]);
   for(const item of legRigs){
     const cache=new Map();
     fields.push({kind:'leg',...item,distance(x,y,z){
-      if(y<-.025||y>.87||Math.abs(x-item.side*legX)>.25||Math.abs(z)>.24)return .10+Math.max(0,-.025-y,y-.87,Math.abs(x-item.side*legX)-.25,Math.abs(z)-.24);
-      const yy=THREE.MathUtils.clamp(y,.035,.795);let row=cache.get(yy);if(!row){row=sampleLeg(yy);cache.set(yy,row);}
-      return ellipseDistance(x-item.side*legX,y,z,row[0],row[1],0,.035,.795);
+      if(y<-.025||y>.95||Math.abs(x-item.side*legX)>.25||Math.abs(z)>.24)return .10+Math.max(0,-.025-y,y-.95,Math.abs(x-item.side*legX)-.25,Math.abs(z)-.24);
+      const yy=THREE.MathUtils.clamp(y,.035,.880);let row=cache.get(yy);if(!row){row=sampleLeg(yy);cache.set(yy,row);}
+      return ellipseDistance(x-item.side*legX,y,z,row[0],row[1],0,.035,.880);
     }});
   }
   function attributesFor(g,weightFunction,colorFunction,uvFunction){
@@ -212,14 +226,17 @@ export function createNailong(){
       for(let f=0;f<fields.length;f++){
         const w=sourceWeights[i*fields.length+f];if(w<1e-6)continue;const field=fields[f];
         if(field.kind==='body'){
-          const h=THREE.MathUtils.smoothstep(y,1.43,1.705);weights[1]+=w*(1-h);weights[2]+=w*h;
+          const h=THREE.MathUtils.smoothstep(y,1.43,1.705),s=THREE.MathUtils.smoothstep(y,.72,1.06);
+          weights[0]+=w*(1-h)*(1-s);weights[1]+=w*(1-h)*s;weights[2]+=w*h;
         }else if(field.kind==='arm'){
           const t=field.nearest(x,y,z)[1],elbow=THREE.MathUtils.smoothstep(t,.45,.68),wrist=THREE.MathUtils.smoothstep(t,.90,1);
           weights[field.index]+=w*(1-elbow);weights[field.index+1]+=w*(elbow-wrist);weights[field.index+2]+=w*wrist;
           dark+=w*THREE.MathUtils.smoothstep(t,.89,.99);
         }else{
           const k=1-THREE.MathUtils.smoothstep(y,.330,.460),a=1-THREE.MathUtils.smoothstep(y,.150,.245);
-          weights[field.index]+=w*(1-k);weights[field.index+1]+=w*(k-a);weights[field.index+2]+=w*a;
+          const hip=1-THREE.MathUtils.smoothstep(y,.46,.78);
+          weights[0]+=w*(1-k)*(1-hip);weights[field.index]+=w*(1-k)*hip;
+          weights[field.index+1]+=w*(k-a);weights[field.index+2]+=w*a;
           dark+=w*(1-THREE.MathUtils.smoothstep(y,.08,.20));
         }
       }
@@ -229,8 +246,8 @@ export function createNailong(){
     // Continuous UVs avoid interpolation across an unrelated yellow atlas texel.
     const bodyColor=body.attributes.color,bp=body.attributes.position,paint=new THREE.Color();
     for(let i=0;i<bp.count;i++){
-      const x=bp.getX(i),y=bp.getY(i),z=bp.getZ(i),dy=(y-1.105)/.335;
-      const shape=(x/(.385*(1-.24*dy)))**2+(dy<0?Math.pow(dy,4):dy*dy);
+      const x=bp.getX(i),y=bp.getY(i),z=bp.getZ(i),dy=(y-1.170)/.270;
+      const shape=(x/(.385*(1-.14*dy)))**2+(dy<0?Math.pow(dy,4):dy*dy);
       const patch=z>profile(y)[2]?1-THREE.MathUtils.smoothstep(shape,.94,1.06):0;
       const onTorso=sourceWeights[i*fields.length];
       paint.copy(yellow).lerp(cream,patch*onTorso).lerp(olive,bodyDark[i]);
@@ -241,7 +258,7 @@ export function createNailong(){
     for(const a of arms){
       const hand=createHandGeometry();hand.scale(-a.side*1.08,1.08,1);hand.rotateY(a.side*.45);
       if(a.side>0){const ix=hand.index.array;for(let i=0;i<ix.length;i+=3){const q=ix[i];ix[i]=ix[i+1];ix[i+1]=q;}}
-      hand.translate(a.side*.280,1.055,.595);
+      hand.translate(a.side*.280,1.045,.560);
       attributesFor(hand,()=>{const w=Array(15).fill(0);w[a.index+2]=1;return w;},()=>1,()=>[.5,.5]);parts.push(hand);
     }
     for(const l of legRigs){
@@ -255,9 +272,8 @@ export function createNailong(){
   // Volumetric green lenses follow the rounded face. A curved cap gives
   // each eye depth while preserving a smooth, circular edge on the skin.
   const face=new THREE.Group();face.name='Face';face.position.y=-1.54;head.add(face);
-  const eyeGreen=new THREE.MeshPhysicalMaterial({name:'Jade green eyes',color:'#79ac60',roughness:.36,clearcoat:.12});
-  const pupilMaterial=new THREE.MeshPhysicalMaterial({name:'Black circular pupils',color:'#090c07',roughness:.28,clearcoat:.18});
-  const highlightMaterial=new THREE.MeshBasicMaterial({color:'#f9f3d4',toneMapped:false});
+  const eyeGreen=new THREE.MeshPhysicalMaterial({name:'Jade green eyes',color:'#87b76e',roughness:.57,clearcoat:.02});
+  const pupilMaterial=new THREE.MeshPhysicalMaterial({name:'Black circular pupils',color:'#090c07',roughness:.58,clearcoat:.015});
   const sphere=new THREE.SphereGeometry(1,32,24),lids=[];
   for(const side of [-1,1]){
     const cx=side*.126,cy=1.876;
@@ -265,11 +281,29 @@ export function createNailong(){
     const group=new THREE.Group();group.name=(side<0?'Left':'Right')+'Eye';
     group.position.set(cx,cy,frontSurface(cx,cy)).addScaledVector(outward,-.012);
     group.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),outward);face.add(group);
-    const eye=new THREE.Mesh(sphere,eyeGreen);eye.name='Round green eye';eye.scale.set(.061,.061,.038);group.add(eye);
-    const pupil=new THREE.Mesh(sphere,pupilMaterial);pupil.name='Slightly lowered round pupil';
-    pupil.scale.set(.0295,.0305,.006);pupil.position.set(-side*.007,-.008,.037);group.add(pupil);
-    const shine=new THREE.Mesh(sphere,highlightMaterial);shine.scale.set(.0023,.0028,.0008);
-    shine.position.set(-.009,.007,.043);group.add(shine);
+    const eye=new THREE.Mesh(sphere,eyeGreen);eye.name='Round green eye';eye.scale.set(.061,.061,.0285);group.add(eye);
+    // The pupil follows the lens surface, instead of adding a second eyeball.
+    const pupilPositions=[],pupilNormals=[],pupilIndices=[],rings=10,sectors=64;
+    function pupilVertex(x,y){
+      const cap=Math.sqrt(Math.max(.001,1-(x/.061)**2-(y/.061)**2));
+      pupilPositions.push(x,y,.0285*cap+.0008);
+      const n=new THREE.Vector3(x/(.061*.061),y/(.061*.061),cap/.0285).normalize();
+      pupilNormals.push(n.x,n.y,n.z);
+    }
+    pupilVertex(-side*.007,-.008);
+    for(let ring=1;ring<=rings;ring++)for(let k=0;k<sectors;k++){
+      const angle=k/sectors*Math.PI*2,r=ring/rings;
+      pupilVertex(-side*.007+.0295*r*Math.cos(angle),-.008+.0305*r*Math.sin(angle));
+    }
+    for(let k=0;k<sectors;k++)pupilIndices.push(0,1+k,1+(k+1)%sectors);
+    for(let ring=1;ring<rings;ring++)for(let k=0;k<sectors;k++){
+      const a=1+(ring-1)*sectors+k,b=1+(ring-1)*sectors+(k+1)%sectors;
+      const c=a+sectors,d=b+sectors;pupilIndices.push(a,c,b,b,c,d);
+    }
+    const pg=new THREE.BufferGeometry();
+    pg.setAttribute('position',new THREE.Float32BufferAttribute(pupilPositions,3));
+    pg.setAttribute('normal',new THREE.Float32BufferAttribute(pupilNormals,3));pg.setIndex(pupilIndices);
+    const pupil=new THREE.Mesh(pg,pupilMaterial);pupil.name='Slightly lowered round pupil';group.add(pupil);
     const p=[],idx=[],cols=64,rows=16;
     for(let i=0;i<=cols;i++)for(let j=0;j<=rows;j++)p.push(0,0,0);
     for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){const k=i*(rows+1)+j,l=k+rows+1;idx.push(k,l,k+1,l,l+1,k+1);}
@@ -278,10 +312,10 @@ export function createNailong(){
     const deform=blink=>{
       const a=geo.attributes.position;
       for(let i=0;i<=cols;i++){
-        const x=-.999+1.998*i/cols,e=Math.sqrt(1-x*x),bottom=Math.min(e,Math.max(-e,THREE.MathUtils.lerp(.88,-1.02,blink)));
+        const x=-.999+1.998*i/cols,e=Math.sqrt(1-x*x),bottom=Math.min(e,Math.max(-e,THREE.MathUtils.lerp(.90,-1.02,blink)));
         for(let j=0;j<=rows;j++){
           const y=THREE.MathUtils.lerp(bottom,e,j/rows),z=Math.sqrt(Math.max(0,1-x*x-y*y));
-          a.setXYZ(i*(rows+1)+j,x*.061,y*.061,z*.038+.001);
+          a.setXYZ(i*(rows+1)+j,x*.061,y*.061,z*.0285+.0008);
         }
       }
       a.needsUpdate=true;geo.computeVertexNormals();

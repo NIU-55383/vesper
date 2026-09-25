@@ -1,0 +1,4 @@
+PASS model walking preview and return to exact explorer position
+PASS clear-notes and close/reopen both invalidate delayed organ answers
+PASS real touch joystick movement, release, pause and resume without drift
+Vesper focused interaction regression passed.

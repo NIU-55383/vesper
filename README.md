@@ -1,6 +1,6 @@
 # 晚祷 Vesper
 
-独立的第三人称 3D 教堂解谜游戏。奶龙在紫灰色礼拜堂中探索，借助乐音与侧窗的光寻找出口。包含当前第 6 版角色、Idle / Walk 动画、教堂、谜题、手机摇杆和全部本地资源。
+独立的第三人称 3D 教堂解谜游戏。奶龙在紫灰色礼拜堂中探索，借助乐音与侧窗的光寻找出口。包含当前第 7 版角色、Idle / Walk 动画、教堂、谜题、手机摇杆和全部本地资源。
 
 本项目仅维护在 C:/Users/牛特/Documents/GitHub/vesper，对应 GitHub 仓库 NIU-55383/vesper。它可以独立运行、独立部署。
 
@@ -13,7 +13,9 @@ npm ci
 npm start
 ~~~
 
-打开 http://127.0.0.1:18760/。旧的 /vesper.html 地址也可使用。模型查看：/vesper.html?model=1&revision=6.1&inspect=1。
+打开 http://127.0.0.1:18760/。旧的 /vesper.html 地址也可使用。模型查看：/vesper.html?model=1&revision=7&inspect=1。
+
+形体前后对照：[四向材质 / 灰模查看](vesper/review.html)。调整参数与验收：[第 7 版记录](vesper/REMODEL-v7.md)。
 
 服务器读取 PORT 环境变量；未设置时使用 18760。仅在本机预览可设置 LOCAL_ONLY=1。关闭服务器进程或重启电脑后，需要再次运行 npm start。
 

@@ -146,15 +146,16 @@ function worldGroupVisible(visible) {for(const child of scene.children){if(child
 function enterModel() {
  if(mode==='model')return;
  modelWalking=false;$('modelWalk').textContent='播放行走';
- modelReturnState={position:character.root.position.clone(),rotation:character.root.rotation.clone(),yaw,pitch,distance};
- previousMode=mode;mode='model';renderer.toneMappingExposure=.93;bloom.enabled=false;document.body.classList.add('model-mode');closePanel();scene.fog=null;worldGroupVisible(false);scene.background=new THREE.Color('#efede6');
- character.root.position.set(0,0,0);character.root.rotation.y=0;distance=3.0;yaw=.95;pitch=.025;
+ modelReturnState={position:character.root.position.clone(),rotation:character.root.rotation.clone(),yaw,pitch,distance,fov:camera.fov,lights:[]};
+ character.root.traverse(o=>{if(o.isLight){modelReturnState.lights.push([o,o.visible]);o.visible=false;}});
+ previousMode=mode;mode='model';renderer.toneMappingExposure=1.04;bloom.enabled=false;document.body.classList.add('model-mode');closePanel();scene.fog=null;worldGroupVisible(false);scene.background=new THREE.Color('#efefec');
+ character.root.position.set(0,0,0);character.root.rotation.y=0;distance=5.02;yaw=.90;pitch=.006;camera.fov=30;camera.updateProjectionMatrix();
  openPanel('认识奶龙','<p>一个安静、略带忧伤的小小旅人。<br>饱满的肚子、轻扶腹部的双手与安静的目光，带呼吸、眨眼和缓缓行走的动作。</p><div class="actions"><button class="action" id="walkPreview">播放走路动作</button><button class="action quiet" id="modelReturn">返回教堂</button></div><p style="font-size:11px">关闭此卡片后，拖动旋转视角；滚轮缩放。按 Esc 返回教堂。</p>','CHARACTER STUDY · NAILONG');
  $('walkPreview').onclick=()=>{modelWalking=!modelWalking;$('walkPreview').textContent=modelWalking?'暂停走路动作':'播放走路动作';$('modelWalk').textContent=modelWalking?'暂停行走':'播放行走';if($('walkPreview'))$('walkPreview').textContent=modelWalking?'暂停走路动作':'播放走路动作';};
  $('modelReturn').onclick=leaveModel;
 }
 let modelWalking=false, modelReturnState=null;
-function leaveModel() {closePanel();renderer.toneMappingExposure=1.15;bloom.enabled=quality==='high';document.body.classList.remove('model-mode');scene.background=new THREE.Color('#17141d');scene.fog=churchFog;worldGroupVisible(true);mode=previousMode;if(modelReturnState){character.root.position.copy(modelReturnState.position);character.root.rotation.copy(modelReturnState.rotation);yaw=modelReturnState.yaw;pitch=modelReturnState.pitch;distance=modelReturnState.distance;}$('intro').hidden=mode!=='intro';$('introFooter').hidden=mode!=='intro';$('hud').hidden=mode==='intro';updateHUD();}
+function leaveModel() {closePanel();renderer.toneMappingExposure=1.15;bloom.enabled=quality==='high';document.body.classList.remove('model-mode');scene.background=new THREE.Color('#17141d');scene.fog=churchFog;worldGroupVisible(true);mode=previousMode;if(modelReturnState){camera.fov=modelReturnState.fov;camera.updateProjectionMatrix();for(const [light,visible] of modelReturnState.lights)light.visible=visible;character.root.position.copy(modelReturnState.position);character.root.rotation.copy(modelReturnState.rotation);yaw=modelReturnState.yaw;pitch=modelReturnState.pitch;distance=modelReturnState.distance;}$('intro').hidden=mode!=='intro';$('introFooter').hidden=mode!=='intro';$('hud').hidden=mode==='intro';updateHUD();}
 
 $('modelButton').onclick=enterModel;$('modelBack').onclick=leaveModel;$('modelWalk').onclick=()=>{modelWalking=!modelWalking;$('modelWalk').textContent=modelWalking?'暂停行走':'播放行走';};
 function resize() {
@@ -230,8 +231,8 @@ async function boot(){
   world=buildChurch(scene);churchFog=scene.fog;
   character=createNailong();scene.add(character.root);character.root.position.set(1.35,0,6.8);character.root.rotation.y=-.35;
   const charFill=new THREE.PointLight('#ffe3a0',1.4,5,1.7);charFill.position.set(0,2.6,1.5);character.root.add(charFill);
-  modelLight=new THREE.Group();modelLight.add(new THREE.HemisphereLight('#fff3da','#b2a594',1.55));const key=new THREE.DirectionalLight('#fff6e6',3);key.position.set(-3,6,5);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.camera.left=-3;key.shadow.camera.right=3;key.shadow.camera.top=3;key.shadow.camera.bottom=-3;key.shadow.normalBias=.012;modelLight.add(key);const rim=new THREE.DirectionalLight('#c4d4e7',.7);rim.position.set(-3,3,-3);modelLight.add(rim);scene.add(modelLight);modelLight.visible=false;
-  modelFloor=new THREE.Mesh(new THREE.CylinderGeometry(1.75,1.85,.13,80),new THREE.MeshStandardMaterial({color:'#dfd9cc',roughness:.85}));modelFloor.position.y=-.065;modelFloor.receiveShadow=true;scene.add(modelFloor);modelFloor.visible=false;
+  modelLight=new THREE.Group();modelLight.add(new THREE.HemisphereLight('#ffffff','#c5c5c1',1.9));const key=new THREE.DirectionalLight('#ffffff',2.6);key.position.set(-3.6,5.6,5);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.camera.left=-3;key.shadow.camera.right=3;key.shadow.camera.top=3;key.shadow.camera.bottom=-3;key.shadow.normalBias=.008;key.shadow.bias=-.00005;key.target.position.set(0,1,0);modelLight.add(key,key.target);const fill=new THREE.DirectionalLight('#ffffff',1.35);fill.position.set(4,2.8,4);fill.target.position.set(0,1,0);modelLight.add(fill,fill.target);const rim=new THREE.DirectionalLight('#ffffff',.7);rim.position.set(1,4,-4);rim.target.position.set(0,1,0);modelLight.add(rim,rim.target);scene.add(modelLight);modelLight.visible=false;
+  modelFloor=new THREE.Mesh(new THREE.CylinderGeometry(1.75,1.85,.13,80),new THREE.MeshStandardMaterial({color:'#e7e7e3',roughness:1}));modelFloor.position.y=-.065;modelFloor.receiveShadow=true;scene.add(modelFloor);modelFloor.visible=false;
   const renderTarget=new THREE.WebGLRenderTarget(innerWidth,innerHeight,{type:THREE.HalfFloatType,samples:4});composer=new EffectComposer(renderer,renderTarget);composer.addPass(new RenderPass(scene,camera));bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),.25,.65,.95);composer.addPass(bloom);composer.addPass(new OutputPass());resize();
   window.addEventListener('resize',resize);$('startButton').disabled=false;$('loading').hidden=true;updateHUD();$('startButton').onclick=start;
   $('world').addEventListener('webglcontextlost',e=>{e.preventDefault();$('fatal').hidden=false;$('fatalText').textContent='图形连接中断，请重新加载。也可以在设置中选择流畅画质。';});

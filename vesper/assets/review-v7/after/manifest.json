@@ -1,0 +1,403 @@
+{
+  "stage": "after",
+  "createdAt": "2026-09-25T12:18:05.028Z",
+  "source": "http://127.0.0.1:18760/vesper.html?qa=1",
+  "settings": {
+    "viewport": {
+      "width": 1600,
+      "height": 1800
+    },
+    "pixelRatio": 1,
+    "background": "#efefec",
+    "floor": "#e7e7e3",
+    "gray": "#9c9c96",
+    "toneMapping": "ACESFilmicToneMapping",
+    "exposure": 1.04,
+    "lights": {
+      "hemisphere": {
+        "sky": "#ffffff",
+        "ground": "#c5c5c1",
+        "intensity": 1.9
+      },
+      "key": {
+        "color": "#ffffff",
+        "intensity": 2.6,
+        "position": [
+          -3.6,
+          5.6,
+          5
+        ],
+        "shadowMap": 2048,
+        "normalBias": 0.008
+      },
+      "fill": {
+        "color": "#ffffff",
+        "intensity": 1.35,
+        "position": [
+          4,
+          2.8,
+          4
+        ]
+      },
+      "rim": {
+        "color": "#ffffff",
+        "intensity": 0.7,
+        "position": [
+          1,
+          4,
+          -4
+        ]
+      }
+    },
+    "orthographic": {
+      "left": -1.102222222,
+      "right": 1.102222222,
+      "top": 1.24,
+      "bottom": -1.24,
+      "near": 0.1,
+      "far": 60,
+      "position": [
+        0,
+        1,
+        8
+      ],
+      "target": [
+        0,
+        1,
+        0
+      ]
+    },
+    "quarter": {
+      "type": "PerspectiveCamera",
+      "fov": 30,
+      "near": 0.1,
+      "far": 60,
+      "position": [
+        0,
+        1.15,
+        5.02
+      ],
+      "target": [
+        0,
+        1,
+        0.02
+      ],
+      "yaw": -0.9
+    },
+    "views": [
+      {
+        "name": "front",
+        "yaw": 0
+      },
+      {
+        "name": "side",
+        "yaw": -1.5707963267948966
+      },
+      {
+        "name": "back",
+        "yaw": 3.141592653589793
+      },
+      {
+        "name": "quarter",
+        "yaw": -0.9
+      }
+    ]
+  },
+  "geometry": {
+    "modelVersion": 7,
+    "heightInterface": 2,
+    "radiusInterface": 0.65,
+    "bounds": {
+      "min": [
+        -0.6162073612213135,
+        0,
+        -0.3469692365238295
+      ],
+      "max": [
+        0.6161665916442871,
+        2,
+        0.6381359207317665
+      ],
+      "size": [
+        1.2323739528656006,
+        2,
+        0.985105157255596
+      ]
+    },
+    "meshes": [
+      {
+        "name": "Reference sculpt body hands and three-toed feet",
+        "vertices": 194320,
+        "triangles": 387950,
+        "skinned": true,
+        "nonfinite": 0
+      },
+      {
+        "name": "Round green eye",
+        "vertices": 825,
+        "triangles": 1472,
+        "skinned": false,
+        "nonfinite": 0
+      },
+      {
+        "name": "Slightly lowered round pupil",
+        "vertices": 641,
+        "triangles": 1216,
+        "skinned": false,
+        "nonfinite": 0
+      },
+      {
+        "name": "Fine relaxed upper eyelid",
+        "vertices": 1105,
+        "triangles": 2048,
+        "skinned": false,
+        "nonfinite": 0
+      },
+      {
+        "name": "Round green eye",
+        "vertices": 825,
+        "triangles": 1472,
+        "skinned": false,
+        "nonfinite": 0
+      },
+      {
+        "name": "Slightly lowered round pupil",
+        "vertices": 641,
+        "triangles": 1216,
+        "skinned": false,
+        "nonfinite": 0
+      },
+      {
+        "name": "Fine relaxed upper eyelid",
+        "vertices": 1105,
+        "triangles": 2048,
+        "skinned": false,
+        "nonfinite": 0
+      },
+      {
+        "name": "Thin mouth with soft lip volume",
+        "vertices": 130,
+        "triangles": 128,
+        "skinned": false,
+        "nonfinite": 0
+      }
+    ],
+    "bones": [
+      {
+        "name": "OrganicRoot",
+        "parent": "Reference sculpt body hands and three-toed feet",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "Spine",
+        "parent": "OrganicRoot",
+        "position": [
+          0,
+          1,
+          0
+        ]
+      },
+      {
+        "name": "Head",
+        "parent": "Spine",
+        "position": [
+          0,
+          0.54,
+          0
+        ]
+      },
+      {
+        "name": "ArmL",
+        "parent": "Spine",
+        "position": [
+          -0.275,
+          0.41,
+          -0.02
+        ]
+      },
+      {
+        "name": "ElbowL",
+        "parent": "ArmL",
+        "position": [
+          -0.23,
+          -0.335,
+          0.175
+        ]
+      },
+      {
+        "name": "WristL",
+        "parent": "ElbowL",
+        "position": [
+          0.225,
+          -0.03,
+          0.405
+        ]
+      },
+      {
+        "name": "ArmR",
+        "parent": "Spine",
+        "position": [
+          0.275,
+          0.41,
+          -0.02
+        ]
+      },
+      {
+        "name": "ElbowR",
+        "parent": "ArmR",
+        "position": [
+          0.23,
+          -0.335,
+          0.175
+        ]
+      },
+      {
+        "name": "WristR",
+        "parent": "ElbowR",
+        "position": [
+          -0.225,
+          -0.03,
+          0.405
+        ]
+      },
+      {
+        "name": "LegL",
+        "parent": "OrganicRoot",
+        "position": [
+          -0.245,
+          0.61,
+          0
+        ]
+      },
+      {
+        "name": "KneeL",
+        "parent": "LegL",
+        "position": [
+          0,
+          -0.265,
+          0
+        ]
+      },
+      {
+        "name": "AnkleL",
+        "parent": "KneeL",
+        "position": [
+          0,
+          -0.225,
+          0
+        ]
+      },
+      {
+        "name": "LegR",
+        "parent": "OrganicRoot",
+        "position": [
+          0.245,
+          0.61,
+          0
+        ]
+      },
+      {
+        "name": "KneeR",
+        "parent": "LegR",
+        "position": [
+          0,
+          -0.265,
+          0
+        ]
+      },
+      {
+        "name": "AnkleR",
+        "parent": "KneeR",
+        "position": [
+          0,
+          -0.225,
+          0
+        ]
+      }
+    ],
+    "clips": [
+      {
+        "name": "Idle",
+        "duration": 8.666462492661498,
+        "tracks": [
+          "MotionRig.position",
+          "MotionRig.quaternion",
+          "Spine.quaternion",
+          "Head.quaternion",
+          "ArmL.quaternion",
+          "ArmR.quaternion",
+          "LegL.quaternion",
+          "KneeL.quaternion",
+          "AnkleL.quaternion",
+          "LegL.position",
+          "LegR.quaternion",
+          "KneeR.quaternion",
+          "AnkleR.quaternion",
+          "LegR.position"
+        ]
+      },
+      {
+        "name": "Walk",
+        "duration": 1.1,
+        "tracks": [
+          "MotionRig.position",
+          "MotionRig.quaternion",
+          "Spine.quaternion",
+          "Head.quaternion",
+          "ArmL.quaternion",
+          "ArmR.quaternion",
+          "LegL.quaternion",
+          "KneeL.quaternion",
+          "AnkleL.quaternion",
+          "LegL.position",
+          "LegR.quaternion",
+          "KneeR.quaternion",
+          "AnkleR.quaternion",
+          "LegR.position"
+        ]
+      }
+    ],
+    "interfaces": {
+      "update": "function",
+      "dispose": "function",
+      "mixer": true,
+      "organicMesh": true,
+      "soleSamples": true,
+      "joints": [
+        "rig",
+        "spine",
+        "head",
+        "leftArm",
+        "rightArm",
+        "leftLeg",
+        "rightLeg",
+        "leftKnee",
+        "rightKnee",
+        "leftAnkle",
+        "rightAnkle",
+        "tail"
+      ]
+    }
+  },
+  "files": [
+    "color-front.jpg",
+    "gray-front.jpg",
+    "color-side.jpg",
+    "gray-side.jpg",
+    "color-back.jpg",
+    "gray-back.jpg",
+    "color-quarter.jpg",
+    "gray-quarter.jpg"
+  ],
+  "notes": [
+    "All front/side/back views use the same orthographic camera, light rig and model root. Only model yaw changes.",
+    "Quarter view has an independent locked perspective camera matching the supplied whole-body reference; do not derive orthographic widths from it.",
+    "Gray views replace all character materials to evaluate silhouette and surface transitions independently of color.",
+    "Floor plane is 1 mm below character root. Scene changes exist in the review page only.",
+    "Any lights attached to the character by the game are hidden in this separate review scene; only the locked neutral rig contributes."
+  ]
+}

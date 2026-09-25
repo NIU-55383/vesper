@@ -12,17 +12,17 @@ let pw;try{pw=require('playwright');}catch{pw=require(path.resolve(path.dirname(
    const THREE=await import('./vesper/vendor/three.module.js'),{createNailong}=await import('./vesper/character.js');
    // Stop the church renderer while recording a separate model study.
    window.requestAnimationFrame=()=>0;
-   const scene=new THREE.Scene();scene.background=new THREE.Color('#e8e4dc');
+   const scene=new THREE.Scene();scene.background=new THREE.Color('#efefec');
    const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(1280,800);renderer.setPixelRatio(1);
-   renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.9;
+   renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.04;
    renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
    const camera=new THREE.OrthographicCamera(-2.2,2.2,1.375,-1.375,.1,50);camera.position.set(0,1.95,10);camera.lookAt(0,1.01,0);
-   scene.add(new THREE.HemisphereLight('#fff3db','#b0a797',1.4));
-   const light=new THREE.DirectionalLight('#fff6e6',3);light.position.set(-3,6,5);light.castShadow=true;light.shadow.mapSize.set(2048,2048);light.shadow.camera.left=-5;light.shadow.camera.right=5;light.shadow.camera.top=4;light.shadow.camera.bottom=-4;light.shadow.normalBias=.012;scene.add(light);
-   const fill=new THREE.DirectionalLight('#b7c9e7',.75);fill.position.set(4,3,-2);scene.add(fill);
-   const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshStandardMaterial({color:'#e8e4dc',roughness:.92}));floor.rotation.x=-Math.PI/2;floor.position.y=-.004;floor.receiveShadow=true;scene.add(floor);
+   scene.add(new THREE.HemisphereLight('#ffffff','#c5c5c1',1.9));
+   const light=new THREE.DirectionalLight('#ffffff',2.6);light.position.set(-3.6,5.6,5);light.castShadow=true;light.shadow.mapSize.set(2048,2048);light.shadow.camera.left=-5;light.shadow.camera.right=5;light.shadow.camera.top=4;light.shadow.camera.bottom=-4;light.shadow.normalBias=.012;scene.add(light);
+   const fill=new THREE.DirectionalLight('#ffffff',1.35);fill.position.set(4,2.8,4);scene.add(fill);
+   const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshStandardMaterial({color:'#e7e7e3',roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=-.004;floor.receiveShadow=true;scene.add(floor);
    const models=[createNailong(),createNailong()];
-   models.forEach((m,i)=>{m.root.position.x=i?1.02:-1.03;m.root.rotation.y=i?Math.PI/2:.40;scene.add(m.root);});
+   models.forEach((m,i)=>{m.root.position.x=i?1.02:-1.03;m.root.rotation.y=i?-Math.PI/2:-.90;scene.add(m.root);});
    const canvas=renderer.domElement;canvas.style='position:fixed;inset:0;z-index:100000';document.body.append(canvas);document.querySelectorAll('dialog[open]').forEach(d=>d.close());
    const stream=canvas.captureStream(30),chunks=[],mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
    const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:6000000});

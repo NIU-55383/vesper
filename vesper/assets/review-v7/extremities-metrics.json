@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "units": "metres, radians where applicable",
+  "sourceFile": "vesper/character-extremities.js",
+  "reference": "User-provided white-background full-body three-quarter hands-on-belly image",
+  "referencePriority": "This reference determines one thumb plus three visible rounded fingers and three broad toes.",
+  "coordinateConvention": {
+    "hand": "Wrist origin retained; fingers toward +X; palm normal +Z.",
+    "foot": "Ankle over heel at X=0,Z=0; forward +Z; flat sole Y=0."
+  },
+  "preview": {
+    "before": "extremities-before.png",
+    "after": "extremities-after.png",
+    "layout": [
+      "upper left: hand facing camera",
+      "upper right: hand oblique",
+      "lower left: foot side",
+      "lower right: foot oblique"
+    ],
+    "rendering": "Identical orthographic camera positions, neutral gray material, light background and soft key/fill lighting."
+  },
+  "before": {
+    "hand": {
+      "vertices": 11742,
+      "triangles": 23480,
+      "bounds": {
+        "min": [
+          -0.04098660126328468,
+          -0.06298771500587463,
+          -0.02349044941365719
+        ],
+        "max": [
+          0.16030755639076233,
+          0.10896890610456467,
+          0.02648250013589859
+        ]
+      },
+      "dimensions": [
+        0.201294157654047,
+        0.1719566211104393,
+        0.04997294954955578
+      ],
+      "nonfinite": 0,
+      "nonmanifoldEdges": 0,
+      "components": 1,
+      "maxNormalLengthError": 4.223947147607987e-8,
+      "heightBins": {},
+      "tinyTrianglesBelow1e20": 43
+    },
+    "foot": {
+      "vertices": 23112,
+      "triangles": 46220,
+      "bounds": {
+        "min": [
+          -0.12089942395687103,
+          0,
+          -0.08071820437908173
+        ],
+        "max": [
+          0.12085050344467163,
+          0.14794015884399414,
+          0.33938026428222656
+        ]
+      },
+      "dimensions": [
+        0.24174992740154266,
+        0.14794015884399414,
+        0.4200984686613083
+      ],
+      "nonfinite": 0,
+      "nonmanifoldEdges": 0,
+      "components": 1,
+      "maxNormalLengthError": 4.3156084039708276e-8,
+      "heightBins": {
+        "0.08": 0.11016532778739929,
+        "0.1": 0.10998232662677765,
+        "0.12": 0.10960402339696884,
+        "0.14": 0.10889891535043716,
+        "0.16": 0.10756489634513855,
+        "0.18": 0.10581545531749725
+      },
+      "tinyTrianglesBelow1e20": 39
+    }
+  },
+  "after": {
+    "hand": {
+      "vertices": 20116,
+      "triangles": 40228,
+      "bounds": {
+        "min": [
+          -0.04095160961151123,
+          -0.06299779564142227,
+          -0.029278980568051338
+        ],
+        "max": [
+          0.14891426265239716,
+          0.09649849683046341,
+          0.028839226812124252
+        ]
+      },
+      "dimensions": [
+        0.1898658722639084,
+        0.15949629247188568,
+        0.05811820738017559
+      ],
+      "nonfinite": 0,
+      "tinyTrianglesBelow1e20": 92,
+      "exactDegenerate": 0,
+      "flipped": 9,
+      "minAreaSquared": 3.6368558077166996e-29,
+      "nonmanifoldEdges": 0,
+      "components": 1,
+      "maxNormalLengthError": 4.370140249676524e-8,
+      "heightBins": {}
+    },
+    "foot": {
+      "vertices": 23112,
+      "triangles": 46220,
+      "bounds": {
+        "min": [
+          -0.12089942395687103,
+          0,
+          -0.08071820437908173
+        ],
+        "max": [
+          0.12085050344467163,
+          0.14794015884399414,
+          0.38689351081848145
+        ]
+      },
+      "dimensions": [
+        0.24174992740154266,
+        0.14794015884399414,
+        0.46761171519756317
+      ],
+      "nonfinite": 0,
+      "tinyTrianglesBelow1e20": 39,
+      "exactDegenerate": 0,
+      "flipped": 1,
+      "minAreaSquared": 1.3261946609391482e-23,
+      "nonmanifoldEdges": 0,
+      "components": 1,
+      "maxNormalLengthError": 4.3156084039708276e-8,
+      "heightBins": {
+        "0.08": 0.08815763145685196,
+        "0.1": 0.08814673125743866,
+        "0.12": 0.08794376999139786,
+        "0.14": 0.08759090304374695,
+        "0.16": 0.08711913228034973,
+        "0.18": 0.08605191856622696
+      }
+    }
+  },
+  "parameters": [
+    {
+      "name": "Visible digit convention",
+      "before": "One thumb and four fingers",
+      "after": "One thumb and three fingers"
+    },
+    {
+      "name": "Exposed finger centreline X extent measured beyond local X=.070",
+      "before": [
+        0.0528,
+        0.0768,
+        0.0664
+      ],
+      "after": [
+        0.043,
+        0.062,
+        0.052
+      ],
+      "note": "Short, middle and upper visible fingers; approximately 19-22% shorter. Three new digits do not correspond one-for-one to all four former digits."
+    },
+    {
+      "name": "Finger base radii",
+      "before": [
+        0.01334,
+        0.01472,
+        0.015065,
+        0.013915
+      ],
+      "after": [
+        0.017,
+        0.018,
+        0.0175
+      ],
+      "note": "Rounded three-finger silhouette; no uniform hand scaling."
+    },
+    {
+      "name": "Palm ellipsoid centre",
+      "before": [
+        0.033,
+        -0.004,
+        0
+      ],
+      "after": [
+        0.033,
+        -0.002,
+        0
+      ]
+    },
+    {
+      "name": "Palm ellipsoid radii",
+      "before": [
+        0.063,
+        0.059,
+        0.0205
+      ],
+      "after": [
+        0.064,
+        0.061,
+        0.0245
+      ]
+    },
+    {
+      "name": "Thumb terminal centre",
+      "before": [
+        0.084,
+        0.093,
+        0
+      ],
+      "after": [
+        0.08,
+        0.078,
+        -0.004
+      ]
+    },
+    {
+      "name": "Thumb terminal radius",
+      "before": 0.016,
+      "after": 0.0185
+    },
+    {
+      "name": "Hand field blend",
+      "before": 0.0045,
+      "after": 0.009,
+      "note": "Shallower webs and continuous palm-to-finger transition."
+    },
+    {
+      "name": "Hand grid step",
+      "before": 0.0049,
+      "after": 0.0036,
+      "note": "Local sampling refinement only, after isolated preview showed artifacts at thin finger webs; torso and foot resolution unchanged."
+    },
+    {
+      "name": "Finger centreline",
+      "before": "Union of tapered straight capsule segments",
+      "after": "Continuous cubic curve with closest-point refinement"
+    },
+    {
+      "name": "Foot mid-instep height multiplier",
+      "before": 1.3,
+      "after": 1.04,
+      "note": "Multiplier over the same original foot field; lowers the middle of the instep by 20%, preserving ankle height and toe tips."
+    },
+    {
+      "name": "Additional positive-Z forefoot scale",
+      "before": 1,
+      "after": 1.14,
+      "note": "C1 smooth transition over Z=0..0.08; rear heel and ankle origin remain fixed. Overall foot length increases 11.31%."
+    }
+  ],
+  "invariants": {
+    "footWidthBefore": 0.24174992740154266,
+    "footWidthAfter": 0.24174992740154266,
+    "anklePeakBefore": 0.14794015884399414,
+    "anklePeakAfter": 0.14794015884399414,
+    "soleYBefore": 0,
+    "soleYAfter": 0,
+    "singleConnectedComponent": true,
+    "closedTwoIncidentFaceEdges": true,
+    "finitePositionsAndNormals": true,
+    "api": [
+      "createHandGeometry",
+      "createFootGeometry"
+    ]
+  },
+  "numericalNotes": [
+    "Dimensions are measured directly from generated BufferGeometry bounds.",
+    "tinyTrianglesBelow1e20 counts very small nonzero faces with squared cross-product magnitude below 1e-20; it is not a zero-area count.",
+    "after.exactDegenerate is zero for both meshes.",
+    "flipped counts tiny faces whose geometric normal has negative dot product with averaged shading normals; this diagnostic is retained rather than silently omitted.",
+    "Normals under the nonlinear forefoot transformation use the inverse Jacobian."
+  ],
+  "integratedReview": {
+    "directory": "limbs",
+    "command": "node vesper/model-study.cjs limbs",
+    "characterHeight": 2,
+    "bones": 15,
+    "clips": [
+      "Idle",
+      "Walk"
+    ],
+    "browserErrors": []
+  }
+}

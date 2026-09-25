@@ -18,29 +18,54 @@ function ellipsoid(cx, cy, cz, rx, ry, rz) {
   };
 }
 
-// A rounded finger follows a softly bent centreline, with radius tapering at
-// each joint. Flattening the Z metric gives flesh thickness without ball joints.
+// Short, bent fingers use one continuous cubic centreline. Closest-point
+// refinement avoids the small ridges left by a union of straight capsules.
 function curvedFinger(points, zScale = 1.2) {
+  const coefficients = [0, 1, 2, 3].map(axis => {
+    const v = points.map(p => p[axis] / (axis === 2 ? zScale : 1));
+    return [v[0], 3 * (v[1] - v[0]), 3 * (v[2] - 2 * v[1] + v[0]),
+      v[3] - 3 * v[2] + 3 * v[1] - v[0]];
+  });
+  const sample = (axis, t) => {
+    const c = coefficients[axis];
+    return c[0] + t * (c[1] + t * (c[2] + t * c[3]));
+  };
   const segments = [];
-  for (let i = 0; i < points.length - 1; i++) {
-    const a = points[i], b = points[i + 1];
-    const ax = a[0], ay = a[1], az = a[2] / zScale;
-    const bx = b[0] - ax, by = b[1] - ay, bz = b[2] / zScale - az;
-    segments.push({ ax, ay, az, bx, by, bz, denominator: bx * bx + by * by + bz * bz,
-      radius: a[3], radiusChange: b[3] - a[3] });
+  for (let i = 0; i < 14; i++) {
+    const t = i / 14, t1 = (i + 1) / 14;
+    const ax = sample(0, t), ay = sample(1, t), az = sample(2, t);
+    const bx = sample(0, t1) - ax, by = sample(1, t1) - ay, bz = sample(2, t1) - az;
+    segments.push({ ax, ay, az, bx, by, bz, t,
+      denominator: bx * bx + by * by + bz * bz });
   }
   return (x, y, z) => {
-    let distance = Infinity;
-    const scaledZ = z / zScale;
+    z /= zScale;
+    let nearestT = 0, nearestD2 = Infinity;
     for (const s of segments) {
-      const px = x - s.ax, py = y - s.ay, pz = scaledZ - s.az;
-      const t = Math.max(0, Math.min(1,
-        (px * s.bx + py * s.by + pz * s.bz) / s.denominator));
-      const d = Math.hypot(px - s.bx * t, py - s.by * t, pz - s.bz * t) -
-        (s.radius + s.radiusChange * t);
-      distance = Math.min(distance, d);
+      const px = x - s.ax, py = y - s.ay, pz = z - s.az;
+      const h = Math.max(0, Math.min(1, (px * s.bx + py * s.by + pz * s.bz) / s.denominator));
+      const dx = px - s.bx * h, dy = py - s.by * h, dz = pz - s.bz * h;
+      const d2 = dx * dx + dy * dy + dz * dz;
+      if (d2 < nearestD2) { nearestD2 = d2; nearestT = s.t + h / 14; }
     }
-    return distance;
+    for (let iteration = 0; iteration < 3; iteration++) {
+      let first = 0, second = 0;
+      for (let axis = 0; axis < 3; axis++) {
+        const c = coefficients[axis], t = nearestT;
+        const residual = sample(axis, t) - (axis === 0 ? x : axis === 1 ? y : z);
+        const derivative = c[1] + t * (2 * c[2] + t * 3 * c[3]);
+        const derivative2 = 2 * c[2] + t * 6 * c[3];
+        first += residual * derivative;
+        second += derivative * derivative + residual * derivative2;
+      }
+      if (second <= 1e-10) break;
+      const step = Math.max(-0.12, Math.min(0.12, first / second));
+      const t = Math.max(0, Math.min(1, nearestT - step));
+      if (Math.abs(t - nearestT) < 1e-7) { nearestT = t; break; }
+      nearestT = t;
+    }
+    return Math.hypot(x - sample(0, nearestT), y - sample(1, nearestT),
+      z - sample(2, nearestT)) - sample(3, nearestT);
   };
 }
 
@@ -52,45 +77,44 @@ function finish(geometry, name) {
 }
 
 /**
- * A flattened soft palm with four short rounded fingers and a relaxed open thumb.
+ * A fleshy soft palm with three short bent fingers and a relaxed opposing thumb.
  * Wrist origin, fingers toward +X, palm facing +Z. Dimensions in metres.
  * Each call returns independently editable geometry, cached only internally.
  */
 export function createHandGeometry() {
   if (!handTemplate) {
     const fields = [
-      { distance: ellipsoid(0.033, -0.004, 0, 0.063, 0.059, 0.0205) },
+      { distance: ellipsoid(0.033, -0.002, 0, 0.064, 0.061, 0.0245) },
       { distance: ellipsoid(-0.007, -0.002, -0.001, 0.034, 0.036, 0.0225) },
     ];
+    // Use the main hands-on-belly reference consistently: one thumb and three
+    // unequal, short rounded fingers. The palm is not scaled down with them.
     const fingers = [
-      { y: -0.044, end: 0.136, spread: -0.003, radius: 0.0116 },
-      { y: -0.015, end: 0.156, spread: -0.001, radius: 0.0128 },
-      { y: 0.015, end: 0.166, spread: 0.001, radius: 0.0131 },
-      { y: 0.044, end: 0.153, spread: 0.003, radius: 0.0121 },
+      { y: -0.037, end: 0.113, spread: -0.004, radius: 0.0170, curl: -0.007 },
+      { y: -0.001, end: 0.132, spread: -0.001, radius: 0.0180, curl: -0.009 },
+      { y: 0.034, end: 0.122, spread: 0.004, radius: 0.0175, curl: -0.006 },
     ];
     for (const finger of fingers) {
-      const y = finger.y;
-      const end = 0.070 + (finger.end - 0.070) * 0.8;
-      const radius = finger.radius * 1.15;
+      const { y, end, radius, spread, curl } = finger;
       fields.push({ distance: curvedFinger([
-        [0.040, y * 0.76, 0.002, radius * 1.19],
-        [0.088, y, 0.006, radius * 1.08],
-        [end - 0.022, y + finger.spread, 0.004, radius],
-        [end, y + finger.spread, -0.001, radius * 0.9],
-      ], 1.26) });
+        [0.039, y * 0.78, 0.002, radius * 1.18],
+        [0.081, y * 0.98, 0.007, radius * 1.12],
+        [end - 0.016, y + spread, 0.003, radius],
+        [end, y + spread * 0.7, curl, radius * 0.94],
+      ], 1.20) });
     }
     fields.push({ distance: curvedFinger([
-      [0.014, 0.034, 0.002, 0.020],
-      [0.036, 0.057, 0.003, 0.019],
-      [0.061, 0.079, 0.002, 0.0175],
-      [0.084, 0.093, 0.000, 0.016],
+      [0.012, 0.027, 0.002, 0.0215],
+      [0.029, 0.053, 0.005, 0.0220],
+      [0.060, 0.077, 0.002, 0.0200],
+      [0.080, 0.078, -0.004, 0.0185],
     ], 1.12) });
 
     handTemplate = finish(createSoftUnionGeometry({
       fields,
       bounds: { min: [-0.052, -0.080, -0.043], max: [0.194, 0.115, 0.047] },
-      step: 0.0049,
-      smoothness: 0.0045,
+      step: 0.0036,
+      smoothness: 0.009,
     }), 'SculptedPalmAndFingers');
     handTemplate.computeBoundingBox();
   }
@@ -153,8 +177,8 @@ export function createFootGeometry() {
       const inverseLength = 1 / Math.hypot(nx, ny, nz);
       normals.setXYZ(i, nx * inverseLength, ny * inverseLength, nz * inverseLength);
     }
-    // Give the instep a fleshy slope into the forefoot, while preserving the
-    // grounded sole, ankle height, and low rounded toe tips.
+    // Lower the overfull instep by 20% through its middle while retaining the
+    // ankle height, grounded sole, and rounded toe volumes.
     for (let i = 0; i < positions.count; i++) {
       const z = positions.getZ(i);
       const y = positions.getY(i);
@@ -164,8 +188,8 @@ export function createFootGeometry() {
       const fall = fallT * fallT * (3 - 2 * fallT);
       const riseDerivative = 6 * riseT * (1 - riseT) / 0.072;
       const fallDerivative = 6 * fallT * (1 - fallT) / 0.117;
-      const heightScale = 1 + 0.3 * rise * (1 - fall);
-      const heightDerivative = 0.3 * (riseDerivative * (1 - fall) - rise * fallDerivative);
+      const heightScale = 1 + 0.04 * rise * (1 - fall);
+      const heightDerivative = 0.04 * (riseDerivative * (1 - fall) - rise * fallDerivative);
       positions.setY(i, y * heightScale);
       const nx = normals.getX(i);
       const ny = normals.getY(i) / heightScale;
@@ -173,6 +197,22 @@ export function createFootGeometry() {
       const inverseLength = 1 / Math.hypot(nx, ny, nz);
       normals.setXYZ(i, nx * inverseLength, ny * inverseLength, nz * inverseLength);
     }
+
+    // Extend the forefoot only: smoothstep leaves the ankle and rear heel
+    // unchanged and has zero derivative at both transition endpoints.
+    for (let i = 0; i < positions.count; i++) {
+      const z = positions.getZ(i);
+      const t = Math.max(0, Math.min(1, z / 0.08));
+      const blend = t * t * (3 - 2 * t);
+      const blendDerivative = 6 * t * (1 - t) / 0.08;
+      const derivative = 1 + 0.14 * (blend + z * blendDerivative);
+      positions.setZ(i, z * (1 + 0.14 * blend));
+      const nx = normals.getX(i), ny = normals.getY(i);
+      const nz = normals.getZ(i) / derivative;
+      const inverseLength = 1 / Math.hypot(nx, ny, nz);
+      normals.setXYZ(i, nx * inverseLength, ny * inverseLength, nz * inverseLength);
+    }
+
     positions.needsUpdate = true;
     normals.needsUpdate = true;
     footTemplate.computeBoundingBox();

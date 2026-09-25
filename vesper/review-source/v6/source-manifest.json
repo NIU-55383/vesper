@@ -1,0 +1,37 @@
+[
+  {
+    "file": "vesper/character.js",
+    "sha256": "C762667AF92082E260D7CD780E5BD7675B383A7CA2CDE80FFC002D99233DD1C6",
+    "bytes": 25662
+  },
+  {
+    "file": "vesper/character-extremities.js",
+    "sha256": "C56B175CCC0A05F08812D5C5C9CD129FE1DA2F2B89AE44CC4C4C3A787387C947",
+    "bytes": 7550
+  },
+  {
+    "file": "vesper/main.js",
+    "sha256": "B4C8F092C994619CBC607B7272B21FFF36E1E920784F9EDFB331CABE393A8876",
+    "bytes": 24888
+  },
+  {
+    "file": "vesper/church.js",
+    "sha256": "4C8FCBD6519A13537DFA46BF0B070069EFA68927CB4629FBDB18FE21F158F028",
+    "bytes": 36958
+  },
+  {
+    "file": "vesper/puzzle.mjs",
+    "sha256": "C94B5CFD1391E06943A82A15BFBF9AE0CFC647C0697C34AECBE67A4CDCD68120",
+    "bytes": 10836
+  },
+  {
+    "file": "vesper/assets/nailong.glb",
+    "sha256": "70563E7ED8941910BB2667145265C4633CE7ECC48D5D59B047A06EC1B6DC9B4B",
+    "bytes": 17123632
+  },
+  {
+    "file": "vesper/assets/church.glb",
+    "sha256": "3EFE509B149F420DFFE4CC68150D2B007345CD5DD30128A822A6B24358C01807",
+    "bytes": 4701924
+  }
+]

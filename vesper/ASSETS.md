@@ -10,7 +10,7 @@
 | `assets/church.glb` | 教堂建筑、长椅、廊台、拱窗、十字架和解谜陈设；可导出的材质、贴图及灯光。 |
 | `import_into_blender.py` | Blender 4.2+ 的导入、相机、场景保存与可选静帧渲染脚本。 |
 
-角色模型的来源是程序化建模。第 6 版放弃此前视频版外形，以用户最后提供的白底、双手扶腹站姿图为主要外形参考，重新建立轮廓、面部、屈肘手臂、手指与三趾脚。参考图仅供本机建模对照，没有作为游戏素材发布；未使用下载的第三方模型。教堂是参考照片的艺术化重构，建筑来源与差异见 architecture-notes.md。
+角色模型的来源是程序化建模。当前第 7 版在第 6 版的白底托肚参考基础上，放缓头颈过渡、内收肘部、缩短腹斑下缘，改为拇指加三根粗短手指，压低并前伸脚掌，降低眼部厚度和高光。详见 [修改参数与验收](REMODEL-v7.md) 和 [四向前后对照](review.html)。参考图仅供本机建模对照，没有作为游戏素材发布；未使用下载的第三方模型。教堂是参考照片的艺术化重构，建筑来源与差异见 architecture-notes.md。
 
 ## 直接导入
 
@@ -52,11 +52,11 @@ blender --background --python vesper/import_into_blender.py -- --asset church --
 
 实现依据：[Blender glTF 手册](https://docs.blender.org/manual/en/5.0/addons/import_export/scene_gltf2.html)、[导入操作 API](https://docs.blender.org/api/main/bpy.ops.import_scene.html)、[官方导入器坐标转换源码](https://github.com/blender/blender/blob/main/scripts/addons_core/io_scene_gltf2/blender/imp/blender_gltf.py)。
 
-## 角色修订 6 · 白底扶腹参考重建
+## 当前角色与沿用动画
 
-本版重新建立小圆头、前伸的薄嘴、喉部曲线与宽厚梨形腹部，奶油色腹斑采用宽拱形轮廓。手臂弯曲搭在腹部两侧，手指与拇指分开建形；双腿从大腿向细踝收束，脚掌有连续足背和三根脚趾。轻微下看的瞳孔、放松的上眼睑与行走时低头表达淡淡忧伤，静态姿势优先保留参考图比例。
+第 6 版建立小圆头、前伸的薄嘴、喉部曲线与宽厚梨形腹部，第 7 版进一步校正接合与局部比例，奶油色腹斑采用宽拱形轮廓。手臂弯曲搭在腹部两侧，手指与拇指分开建形；双腿从大腿向细踝收束，脚掌有连续足背和三根脚趾。轻微下看的瞳孔、放松的上眼睑与行走时低头表达淡淡忧伤，静态姿势优先保留参考图比例。
 
-角色采用 15 根骨骼，新增独立肘部和腕部。头身、双臂和腿通过隐式表面融合；手掌与脚部独立精细建形后合并到同一可见蒙皮网格，眼睛与薄嘴保留独立表面。腹斑使用连续顶点颜色，手足渐变为深橄榄色。教堂的建筑、材质和灯光不属于本轮修改。
+角色沿用 15 根骨骼，包括独立肘部和腕部；名称、层级和动画轨道保持兼容。头身、双臂和腿通过隐式表面融合；手掌与脚部独立精细建形后合并到同一可见蒙皮网格，眼睛与薄嘴保留独立表面。腹斑使用连续顶点颜色，手足渐变为深橄榄色。教堂的建筑、材质和灯光不属于本轮修改。
 
 行走使用 1.10 秒周期，交替支撑约占 58% 周期，摆动脚抬高约 5.2 厘米，髋摆约 -21° 至 +19.5°。扶腹的前臂仅有轻微身体随动，头部合成俯角约 9–11°；待机姿态几乎直立。脚底校准使用最终可见网格的实际顶点。
 
@@ -65,3 +65,5 @@ blender --background --python vesper/import_into_blender.py -- --asset church --
 - node vesper/character-review.cjs：实际几何、动画、脚底高度与三视图；输出 nailong-three-view.jpg、nailong-expression.jpg、nailong-face-profile.jpg、nailong-sculpt.jpg、nailong-walk-poses.jpg。
 - node vesper/gait-check.cjs：支撑脚高度、滑步、膝踝轨道、相位、脚步事件及导出片段循环。
 - node vesper/record-gait.cjs：真实 WebGL 动画录屏，待机 → 行走 → 停步。演示见 assets/nailong-walk.mp4。
+
+第 7 版正式校形请使用 node vesper/model-study.cjs <新阶段名>；脚本保留旧阶段，固定中性相机与灯光。assets/review-v7/final/ 是本轮正式截图，before-neutral/ 是对应基线。旧 character-review.cjs 的暖色工作图已刷新，但不用于中性颜色对照。

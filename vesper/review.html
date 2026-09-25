@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>奶龙形体对照 · VESPER</title>
+  <style>
+    :root { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif; color: #2b302b; background: #f5f4ef; --line: #d9dcd4; --muted: #6d756b; --green: #354e3b; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, input { font: inherit; }
+    button, a, input { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #8aab80; outline-offset: 4px; }
+    a { color: inherit; }
+    button { cursor: pointer; }
+    .page { max-width: 1280px; padding: 38px 32px 32px; margin: auto; }
+    .eyebrow { color: var(--muted); font-size: 11px; letter-spacing: .22em; margin: 0 0 12px; }
+    header { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+    h1 { margin: 0; font-size: clamp(26px, 3.3vw, 38px); letter-spacing: -.045em; font-weight: 650; }
+    .intro { margin: 12px 0 0; color: var(--muted); font-size: 14px; line-height: 1.7; max-width: 660px; }
+    .links { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; flex-shrink: 0; }
+    .link { text-decoration: none; font-size: 13px; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--line); white-space: nowrap; }
+    .link.primary { background: var(--green); border-color: var(--green); color: #fff; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding-bottom: 18px; }
+    .control { display: flex; align-items: center; gap: 10px; }
+    .control-label { color: var(--muted); font-size: 12px; }
+    .segmented { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 9px; background: #eceee7; }
+    .segmented button { padding: 9px 14px; border: 0; border-radius: 6px; background: transparent; color: #65705f; font-size: 13px; white-space: nowrap; }
+    .segmented button[aria-pressed="true"] { background: #fff; color: #263824; box-shadow: 0 1px 3px #25392115; }
+    .mode-controls { display: flex; gap: 14px; }
+    .comparison { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #eee; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); }
+    figure { margin: 0; background: #eff0eb; }
+    figcaption { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px; background: #fafbf7; font-size: 13px; border-bottom: 1px solid var(--line); }
+    .version { color: var(--muted); font-size: 11px; letter-spacing: .08em; }
+    .image-link { display: block; cursor: zoom-in; }
+    .split img { width: 100%; height: auto; display: block; }
+    [hidden] { display: none !important; }
+    .wipe { max-width: 780px; margin: auto; }
+    .wipe-topline { display: flex; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); background: #fafbf7; font-size: 13px; }
+    .wipe-stage { position: relative; width: 100%; overflow: hidden; background: #eff0eb; }
+    .wipe-stage .base { display: block; width: 100%; height: auto; }
+    .wipe-after { position: absolute; inset: 0; clip-path: inset(0 0 0 50%); }
+    .wipe-after img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .divider { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-1px); background: #fff; box-shadow: 0 0 0 1px #2a38294d; pointer-events: none; }
+    .handle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: var(--green); box-shadow: 0 2px 18px #17351b40; font-size: 19px; line-height: 1; }
+    .wipe-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; touch-action: pan-y; }
+    .wipe-stage:focus-within { box-shadow: inset 0 0 0 4px #8aab80; }
+    .wipe-stage:focus-within .handle { outline: 3px solid #8aab80; outline-offset: 3px; }
+    .wipe-hint { margin: 0; padding: 12px 18px; color: var(--muted); font-size: 12px; text-align: center; background: #fafbf7; border-top: 1px solid var(--line); }
+    .notes { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin: 14px 2px 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .notes p { margin: 0; }
+    .specs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding: 25px 2px 0; margin-top: 25px; border-top: 1px solid var(--line); }
+    .specs dl { margin: 0; }
+    .specs dt { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+    .specs dd { margin: 0; color: #354532; font-size: 15px; font-weight: 550; }
+    .specs small { font-size: 11px; font-weight: 400; color: var(--muted); display: block; margin-top: 5px; line-height: 1.6; }
+    footer { color: #7c8378; font-size: 11px; margin-top: 30px; letter-spacing: .05em; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    @media (max-width: 760px) {
+      .page { padding: 24px 16px; }
+      header { align-items: flex-start; flex-direction: column; gap: 18px; margin-bottom: 23px; }
+      .toolbar { gap: 12px; }
+      .mode-controls { flex-wrap: wrap; gap: 10px; }
+      .control-label { display: none; }
+      .segmented button { padding: 9px 12px; }
+      .split { grid-template-columns: 1fr; }
+      .notes { flex-direction: column; gap: 6px; }
+      .specs { grid-template-columns: 1fr 1fr; gap: 22px; }
+      figcaption { padding: 12px 15px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <p class="eyebrow">VESPER / CHARACTER STUDY</p>
+    <header>
+      <div>
+        <h1>奶龙 · 形体对照</h1>
+        <p class="intro">在相同机位与白光下，查看本次调整前后的轮廓、托肚姿态与局部细节。切换灰模可单独检查形体。</p>
+      </div>
+      <nav class="links" aria-label="游戏入口">
+        <a class="link primary" href="../vesper.html?model=1&amp;revision=7&amp;inspect=1">旋转查看 3D 模型</a>
+        <a class="link" href="../vesper.html">返回教堂</a>
+      </nav>
+    </header>
+
+    <div class="toolbar" aria-label="对照设置">
+      <div class="control">
+        <span class="control-label" id="view-label">视角</span>
+        <div class="segmented" role="group" aria-labelledby="view-label" id="views">
+          <button type="button" data-view="front" aria-pressed="false">正面</button>
+          <button type="button" data-view="side" aria-pressed="false">侧面</button>
+          <button type="button" data-view="back" aria-pressed="false">背面</button>
+          <button type="button" data-view="quarter" aria-pressed="true">四分之三</button>
+        </div>
+      </div>
+      <div class="mode-controls">
+        <div class="segmented" role="group" aria-label="显示材质" id="materials">
+          <button type="button" data-material="color" aria-pressed="true">材质</button>
+          <button type="button" data-material="gray" aria-pressed="false">灰模</button>
+        </div>
+        <div class="segmented" role="group" aria-label="对照方式" id="layouts">
+          <button type="button" data-layout="split" aria-pressed="true">并排</button>
+          <button type="button" data-layout="wipe" aria-pressed="false">滑动对照</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="comparison" aria-label="修改前后图片">
+      <div class="split" id="split">
+        <figure>
+          <figcaption><span>修改前</span><span class="version">BEFORE</span></figcaption>
+          <a class="image-link" id="before-link" href="assets/review-v7/before-neutral/color-quarter.jpg" target="_blank" rel="noopener" aria-label="打开修改前原尺寸图片">
+            <img id="before-image" src="assets/review-v7/before-neutral/color-quarter.jpg" alt="修改前模型，四分之三视角，材质显示" width="1600" height="1800" decoding="async">
+          </a>
+        </figure>
+        <figure>
+          <figcaption><span>最终模型</span><span class="version">AFTER</span></figcaption>
+          <a class="image-link" id="after-link" href="assets/review-v7/final/color-quarter.jpg" target="_blank" rel="noopener" aria-label="打开最终模型原尺寸图片">
+            <img id="after-image" src="assets/review-v7/final/color-quarter.jpg" alt="最终模型，四分之三视角，材质显示" width="1600" height="1800" decoding="async">
+          </a>
+        </figure>
+      </div>
+      <div class="wipe" id="wipe" hidden>
+        <div class="wipe-topline"><span>修改前 · 左侧</span><span>最终模型 · 右侧</span></div>
+        <div class="wipe-stage">
+          <img class="base" id="wipe-before" src="assets/review-v7/before-neutral/color-quarter.jpg" alt="修改前模型" width="1600" height="1800" decoding="async">
+          <div class="wipe-after" id="wipe-after-layer">
+            <img id="wipe-after" src="assets/review-v7/final/color-quarter.jpg" alt="最终模型" width="1600" height="1800" decoding="async">
+          </div>
+          <div class="divider" id="divider" aria-hidden="true"><span class="handle">↔</span></div>
+          <label class="sr-only" for="wipe-range">前后对照分界位置</label>
+          <input class="wipe-range" id="wipe-range" type="range" min="0" max="100" value="50" aria-valuetext="左侧修改前占50%，右侧最终模型占50%">
+        </div>
+        <p class="wipe-hint">左右拖动分界线；键盘可用左右方向键调整。</p>
+      </div>
+    </section>
+
+    <div class="notes">
+      <p id="camera-note">四分之三使用独立透视机位，与参考的观察角度接近；前后机位和白光固定。</p>
+      <p>图片按原比例完整显示。并排模式可点图查看原尺寸。</p>
+    </div>
+    <p class="sr-only" id="selection-status" role="status" aria-live="polite">四分之三视角，材质，并排对照。</p>
+
+    <section class="specs" aria-label="本次调整记录">
+      <dl><dt>角色与动画接口</dt><dd>2 m · 15 骨骼</dd><small>Idle / Walk 保持兼容</small></dl>
+      <dl><dt>肘部横向位置</dt><dd>0.560 → 0.505 m</dd><small>上臂与肘部更靠近身体</small></dl>
+      <dl><dt>腹部色块高度</dt><dd>0.670 → 0.540 m</dd><small>腹斑下方保留黄色留边</small></dl>
+      <dl><dt>脚掌长度</dt><dd>约增加 11%</dd><small>脚背降低，前足向前延伸</small></dl>
+    </section>
+    <footer>VESPER · 中性预览用于校形；教堂内的原有灯光与氛围保留。</footer>
+  </main>
+
+  <script>
+    (() => {
+      const state = { view: 'quarter', material: 'color', layout: 'split' };
+      const viewLabels = { front: '正面', side: '侧面', back: '背面', quarter: '四分之三' };
+      const $ = (id) => document.getElementById(id);
+      const path = (stage) => 'assets/review-v7/' + stage + '/' + state.material + '-' + state.view + '.jpg';
+
+      function render() {
+        const before = path('before-neutral');
+        const after = path('final');
+        const detail = viewLabels[state.view] + '视角，' + (state.material === 'color' ? '材质显示' : '无细节灰模');
+        for (const id of ['before-image', 'wipe-before']) {
+          $(id).src = before;
+          $(id).alt = '修改前模型，' + detail;
+        }
+        for (const id of ['after-image', 'wipe-after']) {
+          $(id).src = after;
+          $(id).alt = '最终模型，' + detail;
+        }
+        $('before-link').href = before;
+        $('after-link').href = after;
+        $('split').hidden = state.layout !== 'split';
+        $('wipe').hidden = state.layout !== 'wipe';
+        document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === state.view)));
+        document.querySelectorAll('[data-material]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.material === state.material)));
+        document.querySelectorAll('[data-layout]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.layout === state.layout)));
+        $('camera-note').textContent = state.view === 'quarter'
+          ? '四分之三使用独立透视机位，与参考的观察角度接近；前后机位和白光固定。'
+          : '正、侧、背面使用一致的固定正交相机；前后机位、比例和中性白光保持相同。';
+        $('selection-status').textContent = detail + '，' + (state.layout === 'split' ? '并排' : '滑动') + '对照。';
+      }
+
+      for (const [group, key] of [['views', 'view'], ['materials', 'material'], ['layouts', 'layout']]) {
+        $(group).addEventListener('click', (event) => {
+          const button = event.target.closest('button');
+          if (!button || !button.dataset[key]) return;
+          state[key] = button.dataset[key];
+          render();
+        });
+      }
+
+      $('wipe-range').addEventListener('input', (event) => {
+        const value = Number(event.target.value);
+        $('wipe-after-layer').style.clipPath = 'inset(0 0 0 ' + value + '%)';
+        $('divider').style.left = value + '%';
+        event.target.setAttribute('aria-valuetext', '左侧修改前占' + value + '%，右侧最终模型占' + (100 - value) + '%');
+      });
+    })();
+  </script>
+</body>
+</html>
+

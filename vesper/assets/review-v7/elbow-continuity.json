@@ -1,0 +1,69 @@
+{
+  "check": "inner-elbow signed-distance continuity",
+  "method": "Evaluate old and corrected armField.nearest at the same regular grid. Keep samples within 0.025 metres of each field surface. Estimate XYZ derivatives with symmetric central differences and compare gradient magnitudes. This is a local numeric diagnostic, not a proof over all possible coordinates.",
+  "armSide": 1,
+  "coordinateSystem": {
+    "units": "metres",
+    "forward": "+Z",
+    "origin": "model feet"
+  },
+  "sampling": {
+    "shape": [
+      24,
+      24,
+      24
+    ],
+    "points": 13824,
+    "origin": [
+      0.3,
+      1,
+      0.02
+    ],
+    "spacing": [
+      0.014,
+      0.013,
+      0.013
+    ],
+    "last": [
+      0.622,
+      1.299,
+      0.319
+    ],
+    "surfaceBandAbsoluteDistance": 0.025,
+    "centralDifferenceHalfStep": 0.00001,
+    "gradientAnomalyThreshold": 2
+  },
+  "before": {
+    "nearSurfaceSamples": 4274,
+    "maxGradient": 57.364114255713645,
+    "maxGradientAt": [
+      0.496,
+      1.156,
+      0.202
+    ],
+    "gradientAboveThreshold": 12,
+    "sourceSha256": "fe35e5a49b413f0f5a3e14b5ea42fcd3c3b7e31a3c548d84bfcc382945a1c0f1"
+  },
+  "after": {
+    "nearSurfaceSamples": 4279,
+    "maxGradient": 1.0000002345764916,
+    "maxGradientAt": [
+      0.328,
+      1.286,
+      0.072
+    ],
+    "gradientAboveThreshold": 0,
+    "sourceSha256": "6bd843fc0abf4eac55ce325df6e3d8391c8e7137f31b4ccd645fd1a95693a9e3"
+  },
+  "change": "Only armField nearest-point evaluation changed. Coarse nodes bracket all sampled local minima; bounded golden-section refinement uses the same elliptic distance minus varying radius objective. Curve controls, radii, mesh spacing, shaders, lights, joints and animation interfaces were not changed by this fix.",
+  "visualVerification": {
+    "stage": "elbow-fix",
+    "views": [
+      "color-quarter.jpg",
+      "gray-quarter.jpg",
+      "color-front.jpg",
+      "gray-side.jpg"
+    ],
+    "result": "The visible inner-elbow dashed dark crease is absent in the new neutral screenshots. Main arm outline and wrist-to-palm transition remain intact. Final game-light and animated checks remain required."
+  }
+}

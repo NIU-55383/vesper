@@ -1,0 +1,49 @@
+{
+  "gait": {
+    "period": 1.1,
+    "stance": 0.58,
+    "travel": 0.51,
+    "referenceSpeed": 0.799373040752351
+  },
+  "walkDuration": 1.1,
+  "soleSource": "visible unified skin",
+  "soleSamples": {
+    "left": 23436,
+    "right": 23439
+  },
+  "frames": 240,
+  "minY": -0.000015026061718484071,
+  "maxUnsupportedY": 1.716169741387797e-8,
+  "maxStanceError": 0.000015026061718484071,
+  "leftSwingPeak": 0.05189592113359291,
+  "rightSwingPeak": 0.05189417619354349,
+  "leftAngleMin": -0.37000000734291477,
+  "leftAngleMax": 0.33998675965978165,
+  "rightAngleMin": -0.3699999982550235,
+  "rightAngleMax": 0.33998675973335496,
+  "headPitchMin": 0.15488010432798316,
+  "headPitchMax": 0.19084941876069,
+  "headLocalPitchMin": 0.13500178022380144,
+  "headLocalPitchMax": 0.15499822194927443,
+  "kneeFlexMin": 0.034999998326596594,
+  "kneeFlexMax": 0.2799571787351627,
+  "supportDrift": 0.000001517681201712584,
+  "supportPatchVertices": 7418,
+  "runtime": {
+    "seconds": 3.3,
+    "cycles": 3.00000000000001,
+    "expectedCycles": 2.9999999999999996,
+    "steps": 6
+  },
+  "clipLoopError": 0,
+  "glb": {
+    "bytes": 18147268,
+    "clips": [
+      "Idle",
+      "Walk"
+    ],
+    "tracks": 28,
+    "loopError": 0
+  }
+}
+PASS gait range, stance contact, swing clearance, planted-foot drift, cadence, footfalls and portable GLB loops

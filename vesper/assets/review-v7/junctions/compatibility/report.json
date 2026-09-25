@@ -1,0 +1,592 @@
+{
+  "stage": "junctions",
+  "createdAt": "2026-09-25T12:15:59.767Z",
+  "checks": [
+    {
+      "name": "public height unchanged",
+      "pass": true
+    },
+    {
+      "name": "public collision radius unchanged",
+      "pass": true
+    },
+    {
+      "name": "2 m rest total height and root-level soles",
+      "pass": true
+    },
+    {
+      "name": "bone names, order and hierarchy unchanged",
+      "pass": true
+    },
+    {
+      "name": "animation names, durations and track bindings unchanged",
+      "pass": true
+    },
+    {
+      "name": "public methods and joints unchanged",
+      "pass": true
+    },
+    {
+      "name": "same neutral review cameras and lights",
+      "pass": true
+    },
+    {
+      "name": "sampled real animated vertices and tracks finite",
+      "pass": true
+    },
+    {
+      "name": "sampled soles do not penetrate > 12 mm",
+      "pass": true
+    },
+    {
+      "name": "at least one sampled foot remains planted within 15 mm",
+      "pass": true
+    },
+    {
+      "name": "Idle and Walk loop track endpoints continuous",
+      "pass": true
+    },
+    {
+      "name": "identical frozen in-game render is stable",
+      "pass": true
+    },
+    {
+      "name": "browser page errors absent",
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "jointRestChanges": [
+    {
+      "name": "ElbowL",
+      "before": [
+        -0.285,
+        -0.31,
+        0.175
+      ],
+      "after": [
+        -0.23,
+        -0.335,
+        0.175
+      ]
+    },
+    {
+      "name": "WristL",
+      "before": [
+        0.28,
+        -0.045,
+        0.44
+      ],
+      "after": [
+        0.225,
+        -0.03,
+        0.405
+      ]
+    },
+    {
+      "name": "ElbowR",
+      "before": [
+        0.285,
+        -0.31,
+        0.175
+      ],
+      "after": [
+        0.23,
+        -0.335,
+        0.175
+      ]
+    },
+    {
+      "name": "WristR",
+      "before": [
+        -0.28,
+        -0.045,
+        0.44
+      ],
+      "after": [
+        -0.225,
+        -0.03,
+        0.405
+      ]
+    }
+  ],
+  "geometry": {
+    "before": {
+      "min": [
+        -0.6709175705909729,
+        0,
+        -0.34656044840812683
+      ],
+      "max": [
+        0.6709287166595459,
+        2,
+        0.6796001195907593
+      ],
+      "size": [
+        1.3418462872505188,
+        2,
+        1.026160567998886
+      ]
+    },
+    "after": {
+      "min": [
+        -0.6162073612213135,
+        0,
+        -0.3469692365238295
+      ],
+      "max": [
+        0.6161665916442871,
+        2,
+        0.6381359207317665
+      ],
+      "size": [
+        1.2323739528656006,
+        2,
+        0.985105157255596
+      ]
+    }
+  },
+  "animation": {
+    "totalVertexChecks": 3592656,
+    "nonfinite": 0,
+    "minimumSole": -0.00001186918598250486,
+    "maxBothOffGround": 6.684695019743003e-9,
+    "loopError": 0,
+    "frames": [
+      {
+        "clip": "Idle",
+        "phase": 0,
+        "soles": {
+          "left": -6.632943083673126e-10,
+          "right": -6.632943083673126e-10
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2657,
+          "minZGap": -0.02268741665716978,
+          "medianZGap": -0.011318577874526503,
+          "p95ZGap": 0.0051505808500769135,
+          "over15mmInside": 827,
+          "over30mmInside": 0
+        }
+      },
+      {
+        "clip": "Idle",
+        "phase": 0.125,
+        "soles": {
+          "left": -2.577969304695671e-8,
+          "right": 5.006447256761248e-9
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2661,
+          "minZGap": -0.023454277114667077,
+          "medianZGap": -0.011317314712539828,
+          "p95ZGap": 0.005545371503732355,
+          "over15mmInside": 791,
+          "over30mmInside": 0
+        }
+      },
+      {
+        "clip": "Idle",
+        "phase": 0.25,
+        "soles": {
+          "left": -9.369117037749675e-9,
+          "right": 6.341867919701372e-9
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2657,
+          "minZGap": -0.022687416452614073,
+          "medianZGap": -0.011318584711469959,
+          "p95ZGap": 0.005150557849528226,
+          "over15mmInside": 827,
+          "over30mmInside": 0
+        }
+      },
+      {
+        "clip": "Idle",
+        "phase": 0.5,
+        "soles": {
+          "left": -6.633623650387221e-10,
+          "right": -6.633350535523164e-10
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2657,
+          "minZGap": -0.02268741665716978,
+          "medianZGap": -0.011318577874526503,
+          "p95ZGap": 0.0051505808500769135,
+          "over15mmInside": 827,
+          "over30mmInside": 0
+        }
+      },
+      {
+        "clip": "Idle",
+        "phase": 0.75,
+        "soles": {
+          "left": 2.237334761900911e-8,
+          "right": 6.684695019743003e-9
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2657,
+          "minZGap": -0.022687411853122508,
+          "medianZGap": -0.011318576655013457,
+          "p95ZGap": 0.0051505980296925324,
+          "over15mmInside": 827,
+          "over30mmInside": 0
+        }
+      },
+      {
+        "clip": "Idle",
+        "phase": 0.99999,
+        "soles": {
+          "left": -1.281575512379618e-9,
+          "right": -1.2933372151024969e-9
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2657,
+          "minZGap": -0.022687354839362572,
+          "medianZGap": -0.011318657241251695,
+          "p95ZGap": 0.005150685154846402,
+          "over15mmInside": 827,
+          "over30mmInside": 0
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0,
+        "soles": {
+          "left": 2.1283920403902812e-8,
+          "right": -1.8772428056479384e-9
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2830,
+          "minZGap": -0.037470804433252236,
+          "medianZGap": -0.006716052947902451,
+          "p95ZGap": 0.018893459229591958,
+          "over15mmInside": 1312,
+          "over30mmInside": 463
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0.08,
+        "soles": {
+          "left": -0.00000117559125101252,
+          "right": -0.0000011510406920933747
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2858,
+          "minZGap": -0.03861637921626149,
+          "medianZGap": -0.005658575844261771,
+          "p95ZGap": 0.020076346372590148,
+          "over15mmInside": 1334,
+          "over30mmInside": 553
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0.16,
+        "soles": {
+          "left": -0.000005835216143168509,
+          "right": 0.023955244570970535
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2814,
+          "minZGap": -0.03549656786465838,
+          "medianZGap": -0.008038074217777691,
+          "p95ZGap": 0.016209074279162183,
+          "over15mmInside": 1264,
+          "over30mmInside": 276
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0.25,
+        "soles": {
+          "left": -0.00001186918598250486,
+          "right": 0.04883057624101639
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2699,
+          "minZGap": -0.02844295500959715,
+          "medianZGap": -0.010756068346072456,
+          "p95ZGap": 0.007524959613902205,
+          "over15mmInside": 910,
+          "over30mmInside": 0
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0.42,
+        "soles": {
+          "left": -0.000003398346279936959,
+          "right": 0.02395114302635193
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2721,
+          "minZGap": -0.03238567763970501,
+          "medianZGap": -0.009468988173523263,
+          "p95ZGap": 0.012763100775399105,
+          "over15mmInside": 1121,
+          "over30mmInside": 87
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0.5,
+        "soles": {
+          "left": -1.896895307496038e-9,
+          "right": 2.2455028059198412e-8
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2794,
+          "minZGap": -0.037294866758411094,
+          "medianZGap": -0.007279936551530808,
+          "p95ZGap": 0.018874104873220054,
+          "over15mmInside": 1308,
+          "over30mmInside": 449
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0.58,
+        "soles": {
+          "left": -0.0000010183446192968404,
+          "right": -9.849459274846595e-7
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2811,
+          "minZGap": -0.03878138072598136,
+          "medianZGap": -0.006340976767409856,
+          "p95ZGap": 0.020288198402515167,
+          "over15mmInside": 1333,
+          "over30mmInside": 542
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0.66,
+        "soles": {
+          "left": 0.023954181000590324,
+          "right": -0.000005720574336010031
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2766,
+          "minZGap": -0.03508124710888727,
+          "medianZGap": -0.007949709414456718,
+          "p95ZGap": 0.016515890686677137,
+          "over15mmInside": 1234,
+          "over30mmInside": 260
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0.75,
+        "soles": {
+          "left": 0.04883204400539398,
+          "right": -0.000005069927283329889
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2676,
+          "minZGap": -0.02833552657057714,
+          "medianZGap": -0.0110840365548035,
+          "p95ZGap": 0.007899050271043873,
+          "over15mmInside": 927,
+          "over30mmInside": 0
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0.84,
+        "soles": {
+          "left": 0.04710529372096062,
+          "right": -0.000005735336799261859
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2674,
+          "minZGap": -0.02553204261914399,
+          "medianZGap": -0.01129118159664777,
+          "p95ZGap": 0.005443153440306436,
+          "over15mmInside": 782,
+          "over30mmInside": 0
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0.92,
+        "soles": {
+          "left": 0.0239518154412508,
+          "right": -0.0000032790248951641843
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2750,
+          "minZGap": -0.03252255269695947,
+          "medianZGap": -0.009329935250553811,
+          "p95ZGap": 0.012594263255933491,
+          "over15mmInside": 1118,
+          "over30mmInside": 99
+        }
+      },
+      {
+        "clip": "Walk",
+        "phase": 0.99999,
+        "soles": {
+          "left": 0.0000013248802588350372,
+          "right": -2.112766139816813e-8
+        },
+        "handBelly": {
+          "samples": 5908,
+          "projectedSamples": 2830,
+          "minZGap": -0.03747037701185141,
+          "medianZGap": -0.006715601982433039,
+          "p95ZGap": 0.018892971773696754,
+          "over15mmInside": 1312,
+          "over30mmInside": 463
+        }
+      }
+    ],
+    "materials": [
+      {
+        "mesh": "Reference sculpt body hands and three-toed feet",
+        "material": "Soft golden skin",
+        "transparent": false,
+        "opacity": 1,
+        "depthWrite": true,
+        "depthTest": true,
+        "polygonOffset": false,
+        "roughness": 0.64,
+        "emissive": "000000",
+        "emissiveIntensity": 1
+      },
+      {
+        "mesh": "Round green eye",
+        "material": "Jade green eyes",
+        "transparent": false,
+        "opacity": 1,
+        "depthWrite": true,
+        "depthTest": true,
+        "polygonOffset": false,
+        "roughness": 0.57,
+        "emissive": "000000",
+        "emissiveIntensity": 1
+      },
+      {
+        "mesh": "Slightly lowered round pupil",
+        "material": "Black circular pupils",
+        "transparent": false,
+        "opacity": 1,
+        "depthWrite": true,
+        "depthTest": true,
+        "polygonOffset": false,
+        "roughness": 0.58,
+        "emissive": "000000",
+        "emissiveIntensity": 1
+      },
+      {
+        "mesh": "Fine relaxed upper eyelid",
+        "material": "Golden eyelid skin",
+        "transparent": false,
+        "opacity": 1,
+        "depthWrite": true,
+        "depthTest": true,
+        "polygonOffset": false,
+        "roughness": 0.64,
+        "emissive": "000000",
+        "emissiveIntensity": 1
+      },
+      {
+        "mesh": "Round green eye",
+        "material": "Jade green eyes",
+        "transparent": false,
+        "opacity": 1,
+        "depthWrite": true,
+        "depthTest": true,
+        "polygonOffset": false,
+        "roughness": 0.57,
+        "emissive": "000000",
+        "emissiveIntensity": 1
+      },
+      {
+        "mesh": "Slightly lowered round pupil",
+        "material": "Black circular pupils",
+        "transparent": false,
+        "opacity": 1,
+        "depthWrite": true,
+        "depthTest": true,
+        "polygonOffset": false,
+        "roughness": 0.58,
+        "emissive": "000000",
+        "emissiveIntensity": 1
+      },
+      {
+        "mesh": "Fine relaxed upper eyelid",
+        "material": "Golden eyelid skin",
+        "transparent": false,
+        "opacity": 1,
+        "depthWrite": true,
+        "depthTest": true,
+        "polygonOffset": false,
+        "roughness": 0.64,
+        "emissive": "000000",
+        "emissiveIntensity": 1
+      },
+      {
+        "mesh": "Thin mouth with soft lip volume",
+        "material": "Small dark mouth opening",
+        "transparent": false,
+        "opacity": 1,
+        "depthWrite": true,
+        "depthTest": true,
+        "polygonOffset": false,
+        "roughness": 0.85,
+        "emissive": "000000",
+        "emissiveIntensity": 1
+      }
+    ],
+    "gameLighting": {
+      "exposure": 1.15,
+      "background": "17141d",
+      "fog": true
+    },
+    "handMethod": "Projected +Z gap from inward-facing, fully wrist-bound hand vertices to the animated torso front triangles. Negative means the sampled back surface lies inside the torso. This diagnostic is not a complete solid intersection or visual pass."
+  },
+  "repeatRender": {
+    "hashes": [
+      "2d50379b0027a81a837a3e628c29d9d0a7df085c8cbe96e7e8d34d3f7bd82397",
+      "2d50379b0027a81a837a3e628c29d9d0a7df085c8cbe96e7e8d34d3f7bd82397",
+      "2d50379b0027a81a837a3e628c29d9d0a7df085c8cbe96e7e8d34d3f7bd82397"
+    ],
+    "identical": true,
+    "scope": "Three repeats of identical frozen game time, pose and camera. Confirms frame determinism only; moving-camera z fighting still requires review of the saved near views."
+  },
+  "files": [
+    "church-overview.jpg",
+    "church-idle-quarter.jpg",
+    "church-walk-00.jpg",
+    "church-walk-25.jpg",
+    "church-walk-50.jpg",
+    "church-walk-75.jpg",
+    "church-hands-idle.jpg",
+    "church-hands-walk.jpg"
+  ],
+  "manualReviewRequired": [
+    "Inspect the original-church full and near images for readable dark areas, hand/back-of-palm penetration, and eyelid/pupil/skin boundaries.",
+    "Projection hand gaps are a diagnostic; shallow contact can be intentional. Do not report a clean mesh intersection test from this measurement.",
+    "Static deterministic renders do not prove every moving camera angle is free of z fighting."
+  ]
+}
