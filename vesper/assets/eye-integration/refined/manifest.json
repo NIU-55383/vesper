@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "character": "奶龙",
+    "modelVersion": 7,
+    "materialRevision": 8,
+    "expressionRevision": 10,
+    "forward": "+Z",
+    "units": "metres",
+    "reference": "hands-on-belly still"
+  },
+  "meshes": [
+    {
+      "name": "Reference sculpt body hands and three-toed feet",
+      "vertices": 260413
+    },
+    {
+      "name": "Recessed jade eye",
+      "vertices": 2305
+    },
+    {
+      "name": "Inset downcast pupil",
+      "vertices": 2305
+    },
+    {
+      "name": "Recessed jade eye",
+      "vertices": 2305
+    },
+    {
+      "name": "Inset downcast pupil",
+      "vertices": 2305
+    },
+    {
+      "name": "Small downturned mouth",
+      "vertices": 130
+    }
+  ],
+  "materials": [
+    "Soft golden skin",
+    "Jade green eyes",
+    "Black circular pupils",
+    "Jade green eyes",
+    "Black circular pupils",
+    "Small dark mouth opening"
+  ],
+  "bones": 15,
+  "clips": [
+    {
+      "name": "Idle",
+      "duration": 8.666462492661498,
+      "tracks": 14
+    },
+    {
+      "name": "Walk",
+      "duration": 1.1,
+      "tracks": 14
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,66 @@
+{
+  "stage": "final",
+  "createdAt": "2026-09-27T03:09:16.516Z",
+  "materials": [
+    {
+      "name": "Soft golden skin",
+      "roughness": 0.42,
+      "ior": 1.43,
+      "specularIntensity": 0.85,
+      "clearcoat": 0.12,
+      "clearcoatRoughness": 0.45,
+      "emissive": "000000",
+      "transmission": 0
+    }
+  ],
+  "lights": [
+    {
+      "color": "beb4cd",
+      "intensity": 0.6
+    }
+  ],
+  "bones": [
+    "OrganicRoot",
+    "Spine",
+    "Head",
+    "ArmL",
+    "ElbowL",
+    "WristL",
+    "ArmR",
+    "ElbowR",
+    "WristR",
+    "LegL",
+    "KneeL",
+    "AnkleL",
+    "LegR",
+    "KneeR",
+    "AnkleR"
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "duration": 8.666462492661498,
+      "tracks": 14
+    },
+    {
+      "name": "Walk",
+      "duration": 1.1,
+      "tracks": 14
+    }
+  ],
+  "sources": [
+    {
+      "file": "character.js",
+      "sha256": "bb5874133a6521c18f3451f87180b1ab201f1e48bc192f0d2bcc3ea2fe346528"
+    },
+    {
+      "file": "main.js",
+      "sha256": "d6978c65234ece63d48a7babbc53ec063f70abf6abbe03dceabff3c07b9e445c"
+    },
+    {
+      "file": "church.js",
+      "sha256": "4c8fcbd6519a13537dfa46bf0b070069efa68927cb4629fbdb18fe21f158f028"
+    }
+  ],
+  "errors": []
+}

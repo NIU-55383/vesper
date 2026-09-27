@@ -75,7 +75,7 @@ let playwright;try{playwright=require('playwright');}catch{playwright=require(pa
    const {renderer,scene,camera,models}=window.__review;
    models[1].root.rotation.y=-.95;
    camera.left=-.86;camera.right=.86;camera.top=.564;camera.bottom=-.564;
-   camera.position.set(0,1.38,5);camera.lookAt(0,1.30,0);camera.updateProjectionMatrix();renderer.render(scene,camera);
+   camera.position.set(0,1.60,5);camera.lookAt(0,1.52,0);camera.updateProjectionMatrix();renderer.render(scene,camera);
   });
   await page.screenshot({path:path.join(output,'nailong-face-profile.jpg'),type:'jpeg',quality:95});
   await page.evaluate(()=>{

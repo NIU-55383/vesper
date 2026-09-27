@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "character": "奶龙",
+    "modelVersion": 7,
+    "materialRevision": 8,
+    "expressionRevision": 9,
+    "forward": "+Z",
+    "units": "metres",
+    "reference": "hands-on-belly still"
+  },
+  "meshes": [
+    {
+      "name": "Reference sculpt body hands and three-toed feet",
+      "vertices": 194362
+    },
+    {
+      "name": "Round green eye",
+      "vertices": 825
+    },
+    {
+      "name": "Downcast round pupil",
+      "vertices": 641
+    },
+    {
+      "name": "Soft sorrowful upper eyelid",
+      "vertices": 1105
+    },
+    {
+      "name": "Round green eye",
+      "vertices": 825
+    },
+    {
+      "name": "Downcast round pupil",
+      "vertices": 641
+    },
+    {
+      "name": "Soft sorrowful upper eyelid",
+      "vertices": 1105
+    },
+    {
+      "name": "Small downturned mouth",
+      "vertices": 130
+    }
+  ],
+  "materials": [
+    "Soft golden skin",
+    "Jade green eyes",
+    "Black circular pupils",
+    "Golden eyelid skin",
+    "Jade green eyes",
+    "Black circular pupils",
+    "Golden eyelid skin",
+    "Small dark mouth opening"
+  ],
+  "bones": 15,
+  "clips": [
+    {
+      "name": "Idle",
+      "duration": 8.666462492661498,
+      "tracks": 14
+    },
+    {
+      "name": "Walk",
+      "duration": 1.1,
+      "tracks": 14
+    }
+  ],
+  "errors": []
+}

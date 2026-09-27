@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "revision": 10,
+  "meshes": 6,
+  "bones": 15,
+  "separateYellowLid": false,
+  "unchangedClips": [
+    "Idle",
+    "Walk"
+  ],
+  "bytes": 24390128
+}

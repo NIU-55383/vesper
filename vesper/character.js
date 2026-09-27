@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { createSoftUnionGeometry } from './sculpt-union.js';
+
+import { createSoftUnionGeometry, refineFaceGeometry } from './sculpt-union.js';
 import { createHandGeometry, createFootGeometry } from './character-extremities.js';
 
 // Revision 7 refines the existing sculpt against the white-background, hands-on-belly reference.
@@ -7,7 +8,7 @@ import { createHandGeometry, createFootGeometry } from './character-extremities.
 let skinTemplate=null;
 export function createNailong(){
   const root=new THREE.Group();root.name='Nailong';
-  root.userData={character:'奶龙',modelVersion:7,materialRevision:8,forward:'+Z',units:'metres',reference:'hands-on-belly still'};
+  root.userData={character:'奶龙',modelVersion:7,materialRevision:8,expressionRevision:10,forward:'+Z',units:'metres',reference:'hands-on-belly still'};
   const rig=new THREE.Group();rig.name='MotionRig';root.add(rig);
   const bones=[];
   function bone(parent,name,x,y,z){const b=new THREE.Bone();b.name=name;b.position.set(x,y,z);parent.add(b);bones.push(b);return b;}
@@ -32,7 +33,6 @@ export function createNailong(){
   // Keep the eyelid finish identical to the body so the surface reads as one skin.
   const skinFinish={roughness:.42,metalness:0,ior:1.43,specularIntensity:.85,clearcoat:.12,clearcoatRoughness:.45};
   const skinMaterial=new THREE.MeshPhysicalMaterial({name:'Soft golden skin',color:0xffffff,vertexColors:true,...skinFinish});
-  const faceSkin=new THREE.MeshPhysicalMaterial({name:'Golden eyelid skin',color:yellow,...skinFinish});
   function profileSampler(points) {
     const dimensions = points[0].length - 1;
     const slopes = Array.from({ length: dimensions }, (_, dimension) => {
@@ -222,7 +222,7 @@ export function createNailong(){
     g.setIndex(indices);g.computeBoundingBox();g.computeBoundingSphere();return g;
   }
   if(!skinTemplate){
-    const body=createSoftUnionGeometry({fields,bounds:{min:[-.74,.00,-.40],max:[.74,2.035,.77]},step:.014,smoothness:.025});
+    let body=createSoftUnionGeometry({fields,bounds:{min:[-.74,.00,-.40],max:[.74,2.035,.77]},step:.014,smoothness:.025});
     const sourceWeights=body.userData.sourceWeights,bodyDark=new Float32Array(body.attributes.position.count);
     attributesFor(body,(i,x,y,z)=>{
       const weights=Array(15).fill(0);let dark=0;
@@ -257,6 +257,7 @@ export function createNailong(){
       bodyColor.setXYZ(i,paint.r,paint.g,paint.b);
     }
     splitSeam(body);
+    const coarseBody=body;body=refineFaceGeometry(coarseBody);coarseBody.dispose();
     const parts=[body];
     for(const a of arms){
       const hand=createHandGeometry();hand.scale(-a.side*1.08,1.08,1);hand.rotateY(a.side*.45);
@@ -272,67 +273,88 @@ export function createNailong(){
   }
   const organicMesh=new THREE.SkinnedMesh(skinTemplate.clone(),skinMaterial);organicMesh.name='Reference sculpt body hands and three-toed feet';organicMesh.castShadow=organicMesh.receiveShadow=true;
   rig.remove(rootBone);organicMesh.add(rootBone);rig.add(organicMesh);root.updateMatrixWorld(true);organicMesh.bind(new THREE.Skeleton(bones));
-  // Volumetric green lenses follow the rounded face. A curved cap gives
-  // each eye depth while preserving a smooth, circular edge on the skin.
+  // The eyelids are the head surface itself. Sculpt a shallow socket in the
+  // unified skin; the eye sits behind that surface, not on a separate lid cap.
+  const eyeY=1.873,eyeRY=.065,eyeAngle=Math.asin(.126/profile(eyeY)[0]),eyeArc=.39;
+  const smooth01=t=>{t=THREE.MathUtils.clamp(t,0,1);return t*t*t*(t*(t*6-15)+10);};
+  // Cache every static surface sample once. Blink frames evaluate only the
+  // aperture curve, avoiding repeated profile interpolation and trigonometry.
+  function socketSample(x,y){
+    const w=profile(y)[0],theta=Math.asin(THREE.MathUtils.clamp(x/w,-1,1));
+    const side=x<0?-1:1,u=(theta-side*eyeAngle)/eyeArc,v=(y-eyeY)/eyeRY,r=Math.hypot(u,v);
+    if(r>=1)return null;
+    return {
+      v,cut:.22-side*.34*u+.20*u*u,radial:.011*smooth01((1-r)/.18),
+      crease:.0011*Math.exp(-Math.pow((v+.64+.10*u*u)/.060,2))*Math.pow(Math.max(0,1-u*u),2)
+    };
+  }
+  function sampleOffset(sample,blink,blinkFold){
+    if(!sample)return 0;
+    const cut=THREE.MathUtils.lerp(sample.cut,-1.08,blink);
+    return -sample.radial*smooth01((cut-sample.v)/.18)-sample.crease*blinkFold;
+  }
+  const skinPosition=organicMesh.geometry.attributes.position,skinNormal=organicMesh.geometry.attributes.normal;
+  const socketVertices=[];
+  for(let i=0;i<skinPosition.count;i++){
+    const x=skinPosition.getX(i),y=skinPosition.getY(i),z=skinPosition.getZ(i);
+    if(y<eyeY-eyeRY*1.02||y>eyeY+eyeRY*1.02||z<profile(y)[2])continue;
+    const theta=Math.asin(THREE.MathUtils.clamp(x/profile(y)[0],-1,1));
+    if(![-1,1].some(side=>Math.hypot((theta-side*eyeAngle)/eyeArc,(y-eyeY)/eyeRY)<1.02))continue;
+    const h=.00025;
+    socketVertices.push({i,z,nx:skinNormal.getX(i),ny:skinNormal.getY(i),nz:skinNormal.getZ(i),
+      center:socketSample(x,y),xp:socketSample(x+h,y),xm:socketSample(x-h,y),yp:socketSample(x,y+h),ym:socketSample(x,y-h)});
+  }
+  const scratchNormal=new THREE.Vector3();
+  function deformSockets(blink){
+    const inverseSpan=2000,blinkFold=blink*blink*blink*blink;
+    for(const p of socketVertices){
+      const dz=sampleOffset(p.center,blink,blinkFold);
+      const dx=(sampleOffset(p.xp,blink,blinkFold)-sampleOffset(p.xm,blink,blinkFold))*inverseSpan;
+      const dy=(sampleOffset(p.yp,blink,blinkFold)-sampleOffset(p.ym,blink,blinkFold))*inverseSpan;
+      skinPosition.setZ(p.i,p.z+dz);
+      scratchNormal.set(p.nx-p.nz*dx,p.ny-p.nz*dy,p.nz).normalize();
+      skinNormal.setXYZ(p.i,scratchNormal.x,scratchNormal.y,scratchNormal.z);
+    }
+    skinPosition.needsUpdate=true;skinNormal.needsUpdate=true;
+  }
+  const lids=[deformSockets];deformSockets(0);
   const face=new THREE.Group();face.name='Face';face.position.y=-1.54;head.add(face);
   const eyeGreen=new THREE.MeshPhysicalMaterial({name:'Jade green eyes',color:'#87b76e',roughness:.57,clearcoat:.02});
   const pupilMaterial=new THREE.MeshPhysicalMaterial({name:'Black circular pupils',color:'#090c07',roughness:.58,clearcoat:.015});
-  const sphere=new THREE.SphereGeometry(1,32,24),lids=[];
   for(const side of [-1,1]){
-    const cx=side*.126,cy=1.876;
-    const outward=new THREE.Vector3(side*Math.tan(.35),.035,1).normalize();
-    const group=new THREE.Group();group.name=(side<0?'Left':'Right')+'Eye';
-    group.position.set(cx,cy,frontSurface(cx,cy)).addScaledVector(outward,-.012);
-    group.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),outward);face.add(group);
-    const eye=new THREE.Mesh(sphere,eyeGreen);eye.name='Round green eye';eye.scale.set(.061,.061,.0285);group.add(eye);
-    // The pupil follows the lens surface, instead of adding a second eyeball.
-    const pupilPositions=[],pupilNormals=[],pupilIndices=[],rings=10,sectors=64;
-    function pupilVertex(x,y){
-      const cap=Math.sqrt(Math.max(.001,1-(x/.061)**2-(y/.061)**2));
-      pupilPositions.push(x,y,.0285*cap+.0008);
-      const n=new THREE.Vector3(x/(.061*.061),y/(.061*.061),cap/.0285).normalize();
-      pupilNormals.push(n.x,n.y,n.z);
+    const group=new THREE.Group();group.name=(side<0?'Left':'Right')+'Eye';face.add(group);
+    function lensPoint(u,v,offset){
+      const y=eyeY+v*eyeRY,[w,d,c]=profile(y),theta=side*eyeAngle+u*eyeArc,x=w*Math.sin(theta);
+      const inset=-.0065+.004*Math.max(0,1-u*u-v*v);
+      return [x,y,c+d*Math.cos(theta)+muzzle(x,y)+inset+offset];
     }
-    pupilVertex(-side*.007,-.008);
-    for(let ring=1;ring<=rings;ring++)for(let k=0;k<sectors;k++){
-      const angle=k/sectors*Math.PI*2,r=ring/rings;
-      pupilVertex(-side*.007+.0295*r*Math.cos(angle),-.008+.0305*r*Math.sin(angle));
-    }
-    for(let k=0;k<sectors;k++)pupilIndices.push(0,1+k,1+(k+1)%sectors);
-    for(let ring=1;ring<rings;ring++)for(let k=0;k<sectors;k++){
-      const a=1+(ring-1)*sectors+k,b=1+(ring-1)*sectors+(k+1)%sectors;
-      const c=a+sectors,d=b+sectors;pupilIndices.push(a,c,b,b,c,d);
-    }
-    const pg=new THREE.BufferGeometry();
-    pg.setAttribute('position',new THREE.Float32BufferAttribute(pupilPositions,3));
-    pg.setAttribute('normal',new THREE.Float32BufferAttribute(pupilNormals,3));pg.setIndex(pupilIndices);
-    const pupil=new THREE.Mesh(pg,pupilMaterial);pupil.name='Slightly lowered round pupil';group.add(pupil);
-    const p=[],idx=[],cols=64,rows=16;
-    for(let i=0;i<=cols;i++)for(let j=0;j<=rows;j++)p.push(0,0,0);
-    for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){const k=i*(rows+1)+j,l=k+rows+1;idx.push(k,l,k+1,l,l+1,k+1);}
-    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(p,3));geo.setIndex(idx);
-    const lid=new THREE.Mesh(geo,faceSkin);lid.name='Fine relaxed upper eyelid';group.add(lid);
-    const deform=blink=>{
-      const a=geo.attributes.position;
-      for(let i=0;i<=cols;i++){
-        const x=-.999+1.998*i/cols,e=Math.sqrt(1-x*x),bottom=Math.min(e,Math.max(-e,THREE.MathUtils.lerp(.90,-1.02,blink)));
-        for(let j=0;j<=rows;j++){
-          const y=THREE.MathUtils.lerp(bottom,e,j/rows),z=Math.sqrt(Math.max(0,1-x*x-y*y));
-          a.setXYZ(i*(rows+1)+j,x*.061,y*.061,z*.0285+.0008);
-        }
+    function eyeDisk(cu,cv,ru,rv,offset,material,name){
+      const vertices=[],indices=[],rings=24,sectors=96;
+      vertices.push(...lensPoint(cu,cv,offset));
+      for(let ring=1;ring<=rings;ring++)for(let k=0;k<sectors;k++){
+        const angle=k/sectors*Math.PI*2,r=ring/rings;
+        vertices.push(...lensPoint(cu+ru*r*Math.cos(angle),cv+rv*r*Math.sin(angle),offset));
       }
-      a.needsUpdate=true;geo.computeVertexNormals();
-    };deform(0);lids.push(deform);
+      for(let k=0;k<sectors;k++)indices.push(0,1+k,1+(k+1)%sectors);
+      for(let ring=1;ring<rings;ring++)for(let k=0;k<sectors;k++){
+        const a=1+(ring-1)*sectors+k,b=1+(ring-1)*sectors+(k+1)%sectors,c=a+sectors,d=b+sectors;
+        indices.push(a,c,b,b,c,d);
+      }
+      const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geometry.setIndex(indices);geometry.computeVertexNormals();
+      const mesh=new THREE.Mesh(geometry,material);mesh.name=name;group.add(mesh);
+    }
+    eyeDisk(0,0,1,1,0,eyeGreen,'Recessed jade eye');
+    eyeDisk(-side*.045,-.308,.45,.455,.00035,pupilMaterial,'Inset downcast pupil');
   }
   const mouthMaterial=new THREE.MeshStandardMaterial({name:'Small dark mouth opening',color:'#51371c',roughness:.85});
   const mv=[],mi=[];
   for(let i=0;i<=64;i++){
-    const u=-1+i/32,x=u*.077,center=1.785-.0025*u*u,half=.001+.0028*(1-u*u);
+    const u=-1+i/32,x=u*.077,center=1.785-.020*Math.pow(Math.abs(u),3.5),half=.0012+.0014*(1-u*u);
     for(const y of [center-half,center+half])mv.push(x,y,frontSurface(x,y)+.001);
     if(i<64){const j=i*2;mi.push(j,j+2,j+1,j+2,j+3,j+1);}
   }
   const mg=new THREE.BufferGeometry();mg.setAttribute('position',new THREE.Float32BufferAttribute(mv,3));mg.setIndex(mi);mg.computeVertexNormals();
-  const mouth=new THREE.Mesh(mg,mouthMaterial);mouth.name='Thin mouth with soft lip volume';face.add(mouth);
+  const mouth=new THREE.Mesh(mg,mouthMaterial);mouth.name='Small downturned mouth';face.add(mouth);
   const tail=new THREE.Group();tail.name='Tail';rig.add(tail);
   const soleSamples={left:[],right:[]},contactSoles={left:[],right:[]},pos=organicMesh.geometry.attributes.position;
   const sw=organicMesh.geometry.attributes.skinWeight,si=organicMesh.geometry.attributes.skinIndex;
@@ -443,7 +465,7 @@ export function createNailong(){
     }
     const t=Number.isFinite(options.time)?options.time:localTime;
     const blink=Math.exp(-Math.pow((t%6.8-5.72)/.095,2));
-    if(blink>.001||wasBlinking)for(const deform of lids)deform(blink);
+    if(blink>.001||wasBlinking)for(const deform of lids)deform(blink>.001?blink:0);
     wasBlinking=blink>.001;
   }
 
