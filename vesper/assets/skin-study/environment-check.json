@@ -1,0 +1,893 @@
+{
+  "createdAt": "2026-09-26T17:56:31.743Z",
+  "url": "http://127.0.0.1:18760/vesper.html?qa=1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "game room reflection only on body and eyelid",
+      "pass": true
+    },
+    {
+      "name": "skin and eyelid share one room texture",
+      "pass": true
+    },
+    {
+      "name": "scene.environment stays empty",
+      "pass": true
+    },
+    {
+      "name": "architecture materials have no character environment",
+      "pass": true
+    },
+    {
+      "name": "Idle and Walk animation public API retained",
+      "pass": true
+    },
+    {
+      "name": "cycle 1: preview clears all character env maps",
+      "pass": true
+    },
+    {
+      "name": "cycle 1: preview hides root fill",
+      "pass": true
+    },
+    {
+      "name": "cycle 1: church restores same env texture and intensity",
+      "pass": true
+    },
+    {
+      "name": "cycle 1: church restores FOV and light state",
+      "pass": true
+    },
+    {
+      "name": "cycle 1: scene.environment remains empty",
+      "pass": true
+    },
+    {
+      "name": "cycle 1: preview/game texture counts remain stable after first warmup",
+      "pass": true
+    },
+    {
+      "name": "cycle 1: public animation interface unchanged",
+      "pass": true
+    },
+    {
+      "name": "cycle 2: preview clears all character env maps",
+      "pass": true
+    },
+    {
+      "name": "cycle 2: preview hides root fill",
+      "pass": true
+    },
+    {
+      "name": "cycle 2: church restores same env texture and intensity",
+      "pass": true
+    },
+    {
+      "name": "cycle 2: church restores FOV and light state",
+      "pass": true
+    },
+    {
+      "name": "cycle 2: scene.environment remains empty",
+      "pass": true
+    },
+    {
+      "name": "cycle 2: preview/game texture counts remain stable after first warmup",
+      "pass": true
+    },
+    {
+      "name": "cycle 2: public animation interface unchanged",
+      "pass": true
+    },
+    {
+      "name": "cycle 3: preview clears all character env maps",
+      "pass": true
+    },
+    {
+      "name": "cycle 3: preview hides root fill",
+      "pass": true
+    },
+    {
+      "name": "cycle 3: church restores same env texture and intensity",
+      "pass": true
+    },
+    {
+      "name": "cycle 3: church restores FOV and light state",
+      "pass": true
+    },
+    {
+      "name": "cycle 3: scene.environment remains empty",
+      "pass": true
+    },
+    {
+      "name": "cycle 3: preview/game texture counts remain stable after first warmup",
+      "pass": true
+    },
+    {
+      "name": "cycle 3: public animation interface unchanged",
+      "pass": true
+    },
+    {
+      "name": "Idle/Walk sample pose matrices are finite on 15 original bones",
+      "pass": true
+    },
+    {
+      "name": "no browser exceptions",
+      "pass": true
+    }
+  ],
+  "initial": {
+    "mode": "playing",
+    "fov": 57,
+    "sceneEnvironment": null,
+    "materials": [
+      {
+        "name": "Soft golden skin",
+        "uuid": "c17052fd-ec70-4c5e-bac5-af445eb58768",
+        "envMap": "f9132455-9110-438c-ac9a-daa1cc7d8fcc",
+        "envIntensity": 1.1
+      },
+      {
+        "name": "Jade green eyes",
+        "uuid": "58417a3c-9b95-497f-b04e-ee9784e6445a",
+        "envMap": null,
+        "envIntensity": 1
+      },
+      {
+        "name": "Black circular pupils",
+        "uuid": "b39f454a-627c-4781-91b6-9c5134b55001",
+        "envMap": null,
+        "envIntensity": 1
+      },
+      {
+        "name": "Golden eyelid skin",
+        "uuid": "fcb969e7-ad6f-4812-89f7-93296a957731",
+        "envMap": "f9132455-9110-438c-ac9a-daa1cc7d8fcc",
+        "envIntensity": 1.1
+      },
+      {
+        "name": "Small dark mouth opening",
+        "uuid": "be99e048-95a0-414c-b1ea-94e30cd38dc2",
+        "envMap": null,
+        "envIntensity": 1
+      }
+    ],
+    "lights": [
+      {
+        "uuid": "0958c8a8-30ce-4b1b-9ad6-5297345bd494",
+        "color": "beb4cd",
+        "intensity": 0.6,
+        "visible": true
+      }
+    ],
+    "foreignEnv": [],
+    "textures": 23,
+    "geometries": 131,
+    "clips": [
+      {
+        "name": "Idle",
+        "duration": 8.666462492661498,
+        "tracks": 14
+      },
+      {
+        "name": "Walk",
+        "duration": 1.1,
+        "tracks": 14
+      }
+    ],
+    "api": {
+      "update": "function",
+      "dispose": "function",
+      "mixer": true,
+      "organicMesh": true,
+      "soleSamples": true,
+      "joints": [
+        "rig",
+        "spine",
+        "head",
+        "leftArm",
+        "rightArm",
+        "leftLeg",
+        "rightLeg",
+        "leftKnee",
+        "rightKnee",
+        "leftAnkle",
+        "rightAnkle",
+        "tail"
+      ]
+    },
+    "height": 2,
+    "radius": 0.65
+  },
+  "warmup": {
+    "model": {
+      "mode": "model",
+      "fov": 30,
+      "sceneEnvironment": null,
+      "materials": [
+        {
+          "name": "Soft golden skin",
+          "uuid": "c17052fd-ec70-4c5e-bac5-af445eb58768",
+          "envMap": null,
+          "envIntensity": 1.1
+        },
+        {
+          "name": "Jade green eyes",
+          "uuid": "58417a3c-9b95-497f-b04e-ee9784e6445a",
+          "envMap": null,
+          "envIntensity": 1
+        },
+        {
+          "name": "Black circular pupils",
+          "uuid": "b39f454a-627c-4781-91b6-9c5134b55001",
+          "envMap": null,
+          "envIntensity": 1
+        },
+        {
+          "name": "Golden eyelid skin",
+          "uuid": "fcb969e7-ad6f-4812-89f7-93296a957731",
+          "envMap": null,
+          "envIntensity": 1.1
+        },
+        {
+          "name": "Small dark mouth opening",
+          "uuid": "be99e048-95a0-414c-b1ea-94e30cd38dc2",
+          "envMap": null,
+          "envIntensity": 1
+        }
+      ],
+      "lights": [
+        {
+          "uuid": "0958c8a8-30ce-4b1b-9ad6-5297345bd494",
+          "color": "beb4cd",
+          "intensity": 0.6,
+          "visible": false
+        }
+      ],
+      "foreignEnv": [],
+      "textures": 24,
+      "geometries": 132,
+      "clips": [
+        {
+          "name": "Idle",
+          "duration": 8.666462492661498,
+          "tracks": 14
+        },
+        {
+          "name": "Walk",
+          "duration": 1.1,
+          "tracks": 14
+        }
+      ],
+      "api": {
+        "update": "function",
+        "dispose": "function",
+        "mixer": true,
+        "organicMesh": true,
+        "soleSamples": true,
+        "joints": [
+          "rig",
+          "spine",
+          "head",
+          "leftArm",
+          "rightArm",
+          "leftLeg",
+          "rightLeg",
+          "leftKnee",
+          "rightKnee",
+          "leftAnkle",
+          "rightAnkle",
+          "tail"
+        ]
+      },
+      "height": 2,
+      "radius": 0.65
+    },
+    "restored": {
+      "mode": "playing",
+      "fov": 57,
+      "sceneEnvironment": null,
+      "materials": [
+        {
+          "name": "Soft golden skin",
+          "uuid": "c17052fd-ec70-4c5e-bac5-af445eb58768",
+          "envMap": "f9132455-9110-438c-ac9a-daa1cc7d8fcc",
+          "envIntensity": 1.1
+        },
+        {
+          "name": "Jade green eyes",
+          "uuid": "58417a3c-9b95-497f-b04e-ee9784e6445a",
+          "envMap": null,
+          "envIntensity": 1
+        },
+        {
+          "name": "Black circular pupils",
+          "uuid": "b39f454a-627c-4781-91b6-9c5134b55001",
+          "envMap": null,
+          "envIntensity": 1
+        },
+        {
+          "name": "Golden eyelid skin",
+          "uuid": "fcb969e7-ad6f-4812-89f7-93296a957731",
+          "envMap": "f9132455-9110-438c-ac9a-daa1cc7d8fcc",
+          "envIntensity": 1.1
+        },
+        {
+          "name": "Small dark mouth opening",
+          "uuid": "be99e048-95a0-414c-b1ea-94e30cd38dc2",
+          "envMap": null,
+          "envIntensity": 1
+        }
+      ],
+      "lights": [
+        {
+          "uuid": "0958c8a8-30ce-4b1b-9ad6-5297345bd494",
+          "color": "beb4cd",
+          "intensity": 0.6,
+          "visible": true
+        }
+      ],
+      "foreignEnv": [],
+      "textures": 24,
+      "geometries": 132,
+      "clips": [
+        {
+          "name": "Idle",
+          "duration": 8.666462492661498,
+          "tracks": 14
+        },
+        {
+          "name": "Walk",
+          "duration": 1.1,
+          "tracks": 14
+        }
+      ],
+      "api": {
+        "update": "function",
+        "dispose": "function",
+        "mixer": true,
+        "organicMesh": true,
+        "soleSamples": true,
+        "joints": [
+          "rig",
+          "spine",
+          "head",
+          "leftArm",
+          "rightArm",
+          "leftLeg",
+          "rightLeg",
+          "leftKnee",
+          "rightKnee",
+          "leftAnkle",
+          "rightAnkle",
+          "tail"
+        ]
+      },
+      "height": 2,
+      "radius": 0.65
+    }
+  },
+  "cycles": [
+    {
+      "model": {
+        "mode": "model",
+        "fov": 30,
+        "sceneEnvironment": null,
+        "materials": [
+          {
+            "name": "Soft golden skin",
+            "uuid": "c17052fd-ec70-4c5e-bac5-af445eb58768",
+            "envMap": null,
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Jade green eyes",
+            "uuid": "58417a3c-9b95-497f-b04e-ee9784e6445a",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Black circular pupils",
+            "uuid": "b39f454a-627c-4781-91b6-9c5134b55001",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Golden eyelid skin",
+            "uuid": "fcb969e7-ad6f-4812-89f7-93296a957731",
+            "envMap": null,
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Small dark mouth opening",
+            "uuid": "be99e048-95a0-414c-b1ea-94e30cd38dc2",
+            "envMap": null,
+            "envIntensity": 1
+          }
+        ],
+        "lights": [
+          {
+            "uuid": "0958c8a8-30ce-4b1b-9ad6-5297345bd494",
+            "color": "beb4cd",
+            "intensity": 0.6,
+            "visible": false
+          }
+        ],
+        "foreignEnv": [],
+        "textures": 24,
+        "geometries": 132,
+        "clips": [
+          {
+            "name": "Idle",
+            "duration": 8.666462492661498,
+            "tracks": 14
+          },
+          {
+            "name": "Walk",
+            "duration": 1.1,
+            "tracks": 14
+          }
+        ],
+        "api": {
+          "update": "function",
+          "dispose": "function",
+          "mixer": true,
+          "organicMesh": true,
+          "soleSamples": true,
+          "joints": [
+            "rig",
+            "spine",
+            "head",
+            "leftArm",
+            "rightArm",
+            "leftLeg",
+            "rightLeg",
+            "leftKnee",
+            "rightKnee",
+            "leftAnkle",
+            "rightAnkle",
+            "tail"
+          ]
+        },
+        "height": 2,
+        "radius": 0.65
+      },
+      "restored": {
+        "mode": "playing",
+        "fov": 57,
+        "sceneEnvironment": null,
+        "materials": [
+          {
+            "name": "Soft golden skin",
+            "uuid": "c17052fd-ec70-4c5e-bac5-af445eb58768",
+            "envMap": "f9132455-9110-438c-ac9a-daa1cc7d8fcc",
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Jade green eyes",
+            "uuid": "58417a3c-9b95-497f-b04e-ee9784e6445a",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Black circular pupils",
+            "uuid": "b39f454a-627c-4781-91b6-9c5134b55001",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Golden eyelid skin",
+            "uuid": "fcb969e7-ad6f-4812-89f7-93296a957731",
+            "envMap": "f9132455-9110-438c-ac9a-daa1cc7d8fcc",
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Small dark mouth opening",
+            "uuid": "be99e048-95a0-414c-b1ea-94e30cd38dc2",
+            "envMap": null,
+            "envIntensity": 1
+          }
+        ],
+        "lights": [
+          {
+            "uuid": "0958c8a8-30ce-4b1b-9ad6-5297345bd494",
+            "color": "beb4cd",
+            "intensity": 0.6,
+            "visible": true
+          }
+        ],
+        "foreignEnv": [],
+        "textures": 24,
+        "geometries": 132,
+        "clips": [
+          {
+            "name": "Idle",
+            "duration": 8.666462492661498,
+            "tracks": 14
+          },
+          {
+            "name": "Walk",
+            "duration": 1.1,
+            "tracks": 14
+          }
+        ],
+        "api": {
+          "update": "function",
+          "dispose": "function",
+          "mixer": true,
+          "organicMesh": true,
+          "soleSamples": true,
+          "joints": [
+            "rig",
+            "spine",
+            "head",
+            "leftArm",
+            "rightArm",
+            "leftLeg",
+            "rightLeg",
+            "leftKnee",
+            "rightKnee",
+            "leftAnkle",
+            "rightAnkle",
+            "tail"
+          ]
+        },
+        "height": 2,
+        "radius": 0.65
+      }
+    },
+    {
+      "model": {
+        "mode": "model",
+        "fov": 30,
+        "sceneEnvironment": null,
+        "materials": [
+          {
+            "name": "Soft golden skin",
+            "uuid": "c17052fd-ec70-4c5e-bac5-af445eb58768",
+            "envMap": null,
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Jade green eyes",
+            "uuid": "58417a3c-9b95-497f-b04e-ee9784e6445a",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Black circular pupils",
+            "uuid": "b39f454a-627c-4781-91b6-9c5134b55001",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Golden eyelid skin",
+            "uuid": "fcb969e7-ad6f-4812-89f7-93296a957731",
+            "envMap": null,
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Small dark mouth opening",
+            "uuid": "be99e048-95a0-414c-b1ea-94e30cd38dc2",
+            "envMap": null,
+            "envIntensity": 1
+          }
+        ],
+        "lights": [
+          {
+            "uuid": "0958c8a8-30ce-4b1b-9ad6-5297345bd494",
+            "color": "beb4cd",
+            "intensity": 0.6,
+            "visible": false
+          }
+        ],
+        "foreignEnv": [],
+        "textures": 24,
+        "geometries": 132,
+        "clips": [
+          {
+            "name": "Idle",
+            "duration": 8.666462492661498,
+            "tracks": 14
+          },
+          {
+            "name": "Walk",
+            "duration": 1.1,
+            "tracks": 14
+          }
+        ],
+        "api": {
+          "update": "function",
+          "dispose": "function",
+          "mixer": true,
+          "organicMesh": true,
+          "soleSamples": true,
+          "joints": [
+            "rig",
+            "spine",
+            "head",
+            "leftArm",
+            "rightArm",
+            "leftLeg",
+            "rightLeg",
+            "leftKnee",
+            "rightKnee",
+            "leftAnkle",
+            "rightAnkle",
+            "tail"
+          ]
+        },
+        "height": 2,
+        "radius": 0.65
+      },
+      "restored": {
+        "mode": "playing",
+        "fov": 57,
+        "sceneEnvironment": null,
+        "materials": [
+          {
+            "name": "Soft golden skin",
+            "uuid": "c17052fd-ec70-4c5e-bac5-af445eb58768",
+            "envMap": "f9132455-9110-438c-ac9a-daa1cc7d8fcc",
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Jade green eyes",
+            "uuid": "58417a3c-9b95-497f-b04e-ee9784e6445a",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Black circular pupils",
+            "uuid": "b39f454a-627c-4781-91b6-9c5134b55001",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Golden eyelid skin",
+            "uuid": "fcb969e7-ad6f-4812-89f7-93296a957731",
+            "envMap": "f9132455-9110-438c-ac9a-daa1cc7d8fcc",
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Small dark mouth opening",
+            "uuid": "be99e048-95a0-414c-b1ea-94e30cd38dc2",
+            "envMap": null,
+            "envIntensity": 1
+          }
+        ],
+        "lights": [
+          {
+            "uuid": "0958c8a8-30ce-4b1b-9ad6-5297345bd494",
+            "color": "beb4cd",
+            "intensity": 0.6,
+            "visible": true
+          }
+        ],
+        "foreignEnv": [],
+        "textures": 24,
+        "geometries": 132,
+        "clips": [
+          {
+            "name": "Idle",
+            "duration": 8.666462492661498,
+            "tracks": 14
+          },
+          {
+            "name": "Walk",
+            "duration": 1.1,
+            "tracks": 14
+          }
+        ],
+        "api": {
+          "update": "function",
+          "dispose": "function",
+          "mixer": true,
+          "organicMesh": true,
+          "soleSamples": true,
+          "joints": [
+            "rig",
+            "spine",
+            "head",
+            "leftArm",
+            "rightArm",
+            "leftLeg",
+            "rightLeg",
+            "leftKnee",
+            "rightKnee",
+            "leftAnkle",
+            "rightAnkle",
+            "tail"
+          ]
+        },
+        "height": 2,
+        "radius": 0.65
+      }
+    },
+    {
+      "model": {
+        "mode": "model",
+        "fov": 30,
+        "sceneEnvironment": null,
+        "materials": [
+          {
+            "name": "Soft golden skin",
+            "uuid": "c17052fd-ec70-4c5e-bac5-af445eb58768",
+            "envMap": null,
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Jade green eyes",
+            "uuid": "58417a3c-9b95-497f-b04e-ee9784e6445a",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Black circular pupils",
+            "uuid": "b39f454a-627c-4781-91b6-9c5134b55001",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Golden eyelid skin",
+            "uuid": "fcb969e7-ad6f-4812-89f7-93296a957731",
+            "envMap": null,
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Small dark mouth opening",
+            "uuid": "be99e048-95a0-414c-b1ea-94e30cd38dc2",
+            "envMap": null,
+            "envIntensity": 1
+          }
+        ],
+        "lights": [
+          {
+            "uuid": "0958c8a8-30ce-4b1b-9ad6-5297345bd494",
+            "color": "beb4cd",
+            "intensity": 0.6,
+            "visible": false
+          }
+        ],
+        "foreignEnv": [],
+        "textures": 24,
+        "geometries": 132,
+        "clips": [
+          {
+            "name": "Idle",
+            "duration": 8.666462492661498,
+            "tracks": 14
+          },
+          {
+            "name": "Walk",
+            "duration": 1.1,
+            "tracks": 14
+          }
+        ],
+        "api": {
+          "update": "function",
+          "dispose": "function",
+          "mixer": true,
+          "organicMesh": true,
+          "soleSamples": true,
+          "joints": [
+            "rig",
+            "spine",
+            "head",
+            "leftArm",
+            "rightArm",
+            "leftLeg",
+            "rightLeg",
+            "leftKnee",
+            "rightKnee",
+            "leftAnkle",
+            "rightAnkle",
+            "tail"
+          ]
+        },
+        "height": 2,
+        "radius": 0.65
+      },
+      "restored": {
+        "mode": "playing",
+        "fov": 57,
+        "sceneEnvironment": null,
+        "materials": [
+          {
+            "name": "Soft golden skin",
+            "uuid": "c17052fd-ec70-4c5e-bac5-af445eb58768",
+            "envMap": "f9132455-9110-438c-ac9a-daa1cc7d8fcc",
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Jade green eyes",
+            "uuid": "58417a3c-9b95-497f-b04e-ee9784e6445a",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Black circular pupils",
+            "uuid": "b39f454a-627c-4781-91b6-9c5134b55001",
+            "envMap": null,
+            "envIntensity": 1
+          },
+          {
+            "name": "Golden eyelid skin",
+            "uuid": "fcb969e7-ad6f-4812-89f7-93296a957731",
+            "envMap": "f9132455-9110-438c-ac9a-daa1cc7d8fcc",
+            "envIntensity": 1.1
+          },
+          {
+            "name": "Small dark mouth opening",
+            "uuid": "be99e048-95a0-414c-b1ea-94e30cd38dc2",
+            "envMap": null,
+            "envIntensity": 1
+          }
+        ],
+        "lights": [
+          {
+            "uuid": "0958c8a8-30ce-4b1b-9ad6-5297345bd494",
+            "color": "beb4cd",
+            "intensity": 0.6,
+            "visible": true
+          }
+        ],
+        "foreignEnv": [],
+        "textures": 24,
+        "geometries": 132,
+        "clips": [
+          {
+            "name": "Idle",
+            "duration": 8.666462492661498,
+            "tracks": 14
+          },
+          {
+            "name": "Walk",
+            "duration": 1.1,
+            "tracks": 14
+          }
+        ],
+        "api": {
+          "update": "function",
+          "dispose": "function",
+          "mixer": true,
+          "organicMesh": true,
+          "soleSamples": true,
+          "joints": [
+            "rig",
+            "spine",
+            "head",
+            "leftArm",
+            "rightArm",
+            "leftLeg",
+            "rightLeg",
+            "leftKnee",
+            "rightKnee",
+            "leftAnkle",
+            "rightAnkle",
+            "tail"
+          ]
+        },
+        "height": 2,
+        "radius": 0.65
+      }
+    }
+  ],
+  "clipEvaluation": [
+    {
+      "name": "Idle",
+      "finite": true,
+      "boneCount": 15
+    },
+    {
+      "name": "Walk",
+      "finite": true,
+      "boneCount": 15
+    }
+  ],
+  "errors": [],
+  "notes": [
+    "One complete warmup cycle allows the preview-only shadow target to allocate before leak measurements. Three further cycles compare stable GPU texture counts.",
+    "No runtime files were changed. Only browser-local animation evaluation was performed."
+  ]
+}

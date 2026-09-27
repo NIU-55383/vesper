@@ -1,0 +1,85 @@
+{
+  "checks": [
+    "unchanged 0 POSITION",
+    "unchanged 0 NORMAL",
+    "unchanged 0 JOINTS_0",
+    "unchanged 0 WEIGHTS_0",
+    "unchanged 1 POSITION",
+    "unchanged 1 NORMAL",
+    "unchanged 2 POSITION",
+    "unchanged 2 NORMAL",
+    "unchanged 3 POSITION",
+    "unchanged 3 NORMAL",
+    "unchanged 4 POSITION",
+    "unchanged 4 NORMAL",
+    "unchanged 5 POSITION",
+    "unchanged 5 NORMAL",
+    "unchanged 6 POSITION",
+    "unchanged 6 NORMAL",
+    "unchanged Idle exported tracks",
+    "unchanged Walk exported tracks",
+    "correct Soft golden skin material extensions",
+    "correct Golden eyelid skin material extensions"
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "metallicFactor": 0,
+        "roughnessFactor": 0.42
+      },
+      "name": "Soft golden skin",
+      "extensions": {
+        "KHR_materials_ior": {
+          "ior": 1.43
+        },
+        "KHR_materials_specular": {
+          "specularFactor": 0.85,
+          "specularColorFactor": [
+            1,
+            1,
+            1
+          ]
+        },
+        "KHR_materials_clearcoat": {
+          "clearcoatFactor": 0.12,
+          "clearcoatRoughnessFactor": 0.45
+        }
+      }
+    },
+    {
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.913098651791473,
+          0.6583748172725346,
+          0.174647403645279,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.42
+      },
+      "name": "Golden eyelid skin",
+      "extensions": {
+        "KHR_materials_ior": {
+          "ior": 1.43
+        },
+        "KHR_materials_specular": {
+          "specularFactor": 0.85,
+          "specularColorFactor": [
+            1,
+            1,
+            1
+          ]
+        },
+        "KHR_materials_clearcoat": {
+          "clearcoatFactor": 0.12,
+          "clearcoatRoughnessFactor": 0.45
+        }
+      }
+    }
+  ],
+  "animations": [
+    "Idle",
+    "Walk"
+  ],
+  "errors": []
+}

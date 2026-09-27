@@ -7,7 +7,7 @@ import { createHandGeometry, createFootGeometry } from './character-extremities.
 let skinTemplate=null;
 export function createNailong(){
   const root=new THREE.Group();root.name='Nailong';
-  root.userData={character:'奶龙',modelVersion:7,forward:'+Z',units:'metres',reference:'hands-on-belly still'};
+  root.userData={character:'奶龙',modelVersion:7,materialRevision:8,forward:'+Z',units:'metres',reference:'hands-on-belly still'};
   const rig=new THREE.Group();rig.name='MotionRig';root.add(rig);
   const bones=[];
   function bone(parent,name,x,y,z){const b=new THREE.Bone();b.name=name;b.position.set(x,y,z);parent.add(b);bones.push(b);return b;}
@@ -27,9 +27,12 @@ export function createNailong(){
     legRigs.push({side,leg,knee,ankle,index:side<0?9:12});
   }
   const leftArm=arms[0].shoulder,rightArm=arms[1].shoulder,leftLeg=legRigs[0].leg,rightLeg=legRigs[1].leg;
-  const yellow=new THREE.Color('#f4bd34'),cream=new THREE.Color('#efd39a'),olive=new THREE.Color('#5b5234');
-  const skinMaterial=new THREE.MeshPhysicalMaterial({name:'Soft golden skin',color:0xffffff,vertexColors:true,roughness:.64,metalness:0,clearcoat:.015,clearcoatRoughness:.6});
-  const faceSkin=new THREE.MeshPhysicalMaterial({name:'Golden eyelid skin',color:yellow,roughness:.64});
+  const yellow=new THREE.Color('#f5d474'),cream=new THREE.Color('#f2dfb4'),olive=new THREE.Color('#685d40');
+  // A broad, soft silicone-like reflection, with no emission or transparency.
+  // Keep the eyelid finish identical to the body so the surface reads as one skin.
+  const skinFinish={roughness:.42,metalness:0,ior:1.43,specularIntensity:.85,clearcoat:.12,clearcoatRoughness:.45};
+  const skinMaterial=new THREE.MeshPhysicalMaterial({name:'Soft golden skin',color:0xffffff,vertexColors:true,...skinFinish});
+  const faceSkin=new THREE.MeshPhysicalMaterial({name:'Golden eyelid skin',color:yellow,...skinFinish});
   function profileSampler(points) {
     const dimensions = points[0].length - 1;
     const slopes = Array.from({ length: dimensions }, (_, dimension) => {

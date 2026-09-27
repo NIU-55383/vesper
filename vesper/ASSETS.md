@@ -67,3 +67,6 @@ blender --background --python vesper/import_into_blender.py -- --asset church --
 - node vesper/record-gait.cjs：真实 WebGL 动画录屏，待机 → 行走 → 停步。演示见 assets/nailong-walk.mp4。
 
 第 7 版正式校形请使用 node vesper/model-study.cjs <新阶段名>；脚本保留旧阶段，固定中性相机与灯光。assets/review-v7/final/ 是本轮正式截图，before-neutral/ 是对应基线。旧 character-review.cjs 的暖色工作图已刷新，但不用于中性颜色对照。
+
+
+当前资源已同步[第 8 轮皮肤材质](MATERIAL-v8.md)：更浅的奶黄色、柔润软胶反射，以及教堂灰紫色环境融合。形体与骨骼仍为第 7 版；独立 GLB 使用相同基础色和物理材质，教堂环境反射由网页场景提供。

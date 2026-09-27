@@ -146,8 +146,12 @@ function worldGroupVisible(visible) {for(const child of scene.children){if(child
 function enterModel() {
  if(mode==='model')return;
  modelWalking=false;$('modelWalk').textContent='播放行走';
- modelReturnState={position:character.root.position.clone(),rotation:character.root.rotation.clone(),yaw,pitch,distance,fov:camera.fov,lights:[]};
+ modelReturnState={position:character.root.position.clone(),rotation:character.root.rotation.clone(),yaw,pitch,distance,fov:camera.fov,lights:[],surfaces:[]};
  character.root.traverse(o=>{if(o.isLight){modelReturnState.lights.push([o,o.visible]);o.visible=false;}});
+ const seenSurfaces=new Set();
+ character.root.traverse(o=>{if(o.isMesh)for(const material of Array.isArray(o.material)?o.material:[o.material]){
+  if(material.envMap&&!seenSurfaces.has(material)){seenSurfaces.add(material);modelReturnState.surfaces.push([material,material.envMap,material.envMapIntensity]);material.envMap=null;material.needsUpdate=true;}
+ }});
  previousMode=mode;mode='model';renderer.toneMappingExposure=1.04;bloom.enabled=false;document.body.classList.add('model-mode');closePanel();scene.fog=null;worldGroupVisible(false);scene.background=new THREE.Color('#efefec');
  character.root.position.set(0,0,0);character.root.rotation.y=0;distance=5.02;yaw=.90;pitch=.006;camera.fov=30;camera.updateProjectionMatrix();
  openPanel('认识奶龙','<p>一个安静、略带忧伤的小小旅人。<br>饱满的肚子、轻扶腹部的双手与安静的目光，带呼吸、眨眼和缓缓行走的动作。</p><div class="actions"><button class="action" id="walkPreview">播放走路动作</button><button class="action quiet" id="modelReturn">返回教堂</button></div><p style="font-size:11px">关闭此卡片后，拖动旋转视角；滚轮缩放。按 Esc 返回教堂。</p>','CHARACTER STUDY · NAILONG');
@@ -155,7 +159,7 @@ function enterModel() {
  $('modelReturn').onclick=leaveModel;
 }
 let modelWalking=false, modelReturnState=null;
-function leaveModel() {closePanel();renderer.toneMappingExposure=1.15;bloom.enabled=quality==='high';document.body.classList.remove('model-mode');scene.background=new THREE.Color('#17141d');scene.fog=churchFog;worldGroupVisible(true);mode=previousMode;if(modelReturnState){camera.fov=modelReturnState.fov;camera.updateProjectionMatrix();for(const [light,visible] of modelReturnState.lights)light.visible=visible;character.root.position.copy(modelReturnState.position);character.root.rotation.copy(modelReturnState.rotation);yaw=modelReturnState.yaw;pitch=modelReturnState.pitch;distance=modelReturnState.distance;}$('intro').hidden=mode!=='intro';$('introFooter').hidden=mode!=='intro';$('hud').hidden=mode==='intro';updateHUD();}
+function leaveModel() {closePanel();renderer.toneMappingExposure=1.15;bloom.enabled=quality==='high';document.body.classList.remove('model-mode');scene.background=new THREE.Color('#17141d');scene.fog=churchFog;worldGroupVisible(true);mode=previousMode;if(modelReturnState){camera.fov=modelReturnState.fov;camera.updateProjectionMatrix();for(const [light,visible] of modelReturnState.lights)light.visible=visible;for(const [material,envMap,intensity] of modelReturnState.surfaces){material.envMap=envMap;material.envMapIntensity=intensity;material.needsUpdate=true;}character.root.position.copy(modelReturnState.position);character.root.rotation.copy(modelReturnState.rotation);yaw=modelReturnState.yaw;pitch=modelReturnState.pitch;distance=modelReturnState.distance;}$('intro').hidden=mode!=='intro';$('introFooter').hidden=mode!=='intro';$('hud').hidden=mode==='intro';updateHUD();}
 
 $('modelButton').onclick=enterModel;$('modelBack').onclick=leaveModel;$('modelWalk').onclick=()=>{modelWalking=!modelWalking;$('modelWalk').textContent=modelWalking?'暂停行走':'播放行走';};
 function resize() {
@@ -230,9 +234,25 @@ async function boot(){
   scene=new THREE.Scene();scene.background=new THREE.Color('#17121e');camera=new THREE.PerspectiveCamera(57,innerWidth/innerHeight,.1,90);
   world=buildChurch(scene);churchFog=scene.fog;
   character=createNailong();scene.add(character.root);character.root.position.set(1.35,0,6.8);character.root.rotation.y=-.35;
-  const charFill=new THREE.PointLight('#ffe3a0',1.4,5,1.7);charFill.position.set(0,2.6,1.5);character.root.add(charFill);
+  const charFill=new THREE.PointLight('#beb4cd',.6,5,1.7);charFill.position.set(0,2.6,1.5);character.root.add(charFill);
   modelLight=new THREE.Group();modelLight.add(new THREE.HemisphereLight('#ffffff','#c5c5c1',1.9));const key=new THREE.DirectionalLight('#ffffff',2.6);key.position.set(-3.6,5.6,5);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.camera.left=-3;key.shadow.camera.right=3;key.shadow.camera.top=3;key.shadow.camera.bottom=-3;key.shadow.normalBias=.008;key.shadow.bias=-.00005;key.target.position.set(0,1,0);modelLight.add(key,key.target);const fill=new THREE.DirectionalLight('#ffffff',1.35);fill.position.set(4,2.8,4);fill.target.position.set(0,1,0);modelLight.add(fill,fill.target);const rim=new THREE.DirectionalLight('#ffffff',.7);rim.position.set(1,4,-4);rim.target.position.set(0,1,0);modelLight.add(rim,rim.target);scene.add(modelLight);modelLight.visible=false;
   modelFloor=new THREE.Mesh(new THREE.CylinderGeometry(1.75,1.85,.13,80),new THREE.MeshStandardMaterial({color:'#e7e7e3',roughness:1}));modelFloor.position.y=-.065;modelFloor.receiveShadow=true;scene.add(modelFloor);modelFloor.visible=false;
+  // Capture the room once for soft, tinted reflections on the traveller only.
+  // This is scene lighting: the neutral study removes it and restores it on return.
+  const pmrem=new THREE.PMREMGenerator(renderer);
+  let characterEnvironment;
+  const wasCharacterVisible=character.root.visible;
+  try {
+   character.root.visible=false;
+   characterEnvironment=pmrem.fromScene(scene,0,.15,55,{size:128,position:new THREE.Vector3(0,1.4,3)});
+  } finally {character.root.visible=wasCharacterVisible;pmrem.dispose();}
+  characterEnvironment.texture.name='Church reflected light';
+  const reflectedMaterials=new Set();
+  character.root.traverse(o=>{if(o.isMesh)for(const material of Array.isArray(o.material)?o.material:[o.material]){
+   if((material.name==='Soft golden skin'||material.name==='Golden eyelid skin')&&!reflectedMaterials.has(material)){
+    reflectedMaterials.add(material);material.envMap=characterEnvironment.texture;material.envMapIntensity=1.1;material.needsUpdate=true;
+   }
+  }});
   const renderTarget=new THREE.WebGLRenderTarget(innerWidth,innerHeight,{type:THREE.HalfFloatType,samples:4});composer=new EffectComposer(renderer,renderTarget);composer.addPass(new RenderPass(scene,camera));bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),.25,.65,.95);composer.addPass(bloom);composer.addPass(new OutputPass());resize();
   window.addEventListener('resize',resize);$('startButton').disabled=false;$('loading').hidden=true;updateHUD();$('startButton').onclick=start;
   $('world').addEventListener('webglcontextlost',e=>{e.preventDefault();$('fatal').hidden=false;$('fatalText').textContent='图形连接中断，请重新加载。也可以在设置中选择流畅画质。';});
