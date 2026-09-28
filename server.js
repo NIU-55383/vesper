@@ -12,7 +12,7 @@ const ROOT_FILES = new Set([
 ]);
 const GAME_FILES = new Set([
   'main.js', 'church.js', 'character.js', 'character-extremities.js',
-  'sculpt-union.js', 'puzzle.mjs', 'style.css', 'review.html',
+  'sculpt-union.js', 'opening.js', 'chapter-audio.js', 'puzzle.mjs', 'style.css', 'review.html',
 ]);
 const TYPES = {
   '.html': 'text/html; charset=utf-8',

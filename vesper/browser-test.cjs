@@ -1,327 +1,170 @@
 'use strict';
-/** Full browser regression for the standalone Vesper chapter. Run: node vesper/browser-test.cjs */
-const path = require('node:path');
-const fs = require('node:fs');
-const assert = require('node:assert/strict');
-const { spawn } = require('node:child_process');
-let playwright;
-try { playwright = require('playwright'); }
-catch { playwright = require(path.resolve(path.dirname(process.execPath), '../node_modules/playwright')); }
-const root = path.resolve(__dirname, '..');
-const port = Number(process.env.VESPER_TEST_PORT) || 18761;
-const output = path.join(root, 'test-results');
-const baseURL = `http://127.0.0.1:${port}/vesper.html?qa=1`;
-const server = spawn(process.execPath, [path.join(root, 'server.js')], {
-  cwd: root, env: { ...process.env, PORT: String(port) }, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true,
-});
-let serverLog = '';
-server.stdout.on('data', data => { serverLog += data.toString(); });
-server.stderr.on('data', data => { serverLog += data.toString(); });
+/** Chapter I browser regression. Uses real controls; QA only places the actor and accelerates preliminary tape checks. */
+const path=require('node:path'),fs=require('node:fs'),assert=require('node:assert/strict');
+const {spawn}=require('node:child_process');
+let playwright;try{playwright=require('playwright');}catch{playwright=require(path.resolve(path.dirname(process.execPath),'../node_modules/playwright'));}
+const root=path.resolve(__dirname,'..'),port=Number(process.env.VESPER_TEST_PORT)||18761;
+const output=path.join(root,'test-results','chapter1'),url=`http://127.0.0.1:${port}/vesper.html?qa=1`;
+const report={started:new Date().toISOString(),checks:[],screenshots:[],errors:[],tapeSamples:[]};
+let server,browser,page,serverLog='';
+function pass(name,details){report.checks.push({name,status:'passed',...(details?{details}:{})});console.log('PASS '+name);}
+async function snapshot(name,target=page){const file=path.join(output,name+'.png');await target.screenshot({path:file,fullPage:true,timeout:30000});report.screenshots.push(path.relative(root,file).replaceAll('\\','/'));}
+async function waitServer(){const until=Date.now()+15000;while(Date.now()<until){if(server.exitCode!==null)throw Error(serverLog);try{if((await fetch(url)).ok)return;}catch{}await new Promise(r=>setTimeout(r,150));}throw Error('Test server timeout: '+serverLog);}
+async function setup(context){await context.addInitScript(()=>{localStorage.setItem('vesper-quality','low');localStorage.setItem('vesper-muted','true');});const p=await context.newPage();p.on('pageerror',e=>report.errors.push(e.message));p.on('console',m=>{if(m.type()==='error')report.errors.push(m.text());});await p.goto(url,{waitUntil:'domcontentloaded',timeout:90000});await ready(p);await p.bringToFront();await p.evaluate(()=>window.dispatchEvent(new Event('focus')));return p;}
+async function ready(p=page){await p.waitForFunction(()=>window.__vesper?.world&&document.getElementById('startButton')&&!document.getElementById('startButton').disabled,null,{timeout:90000});assert.equal(await p.locator('#fatal').isVisible(),false);await p.bringToFront();await p.evaluate(()=>window.dispatchEvent(new Event('focus')));}
+async function state(p=page){return p.evaluate(()=>window.__vesper.state);}
+async function expect(key,value=true,p=page){await p.waitForFunction(({key,value})=>window.__vesper.state[key]===value,{key,value},{timeout:30000});}
+async function close(p=page){if(await p.locator('#panelClose').isVisible())await p.locator('#panelClose').click();}
+async function place(id,p=page){assert.equal(await p.evaluate(id=>window.__vesper.setPosition(id),id),true,'Point missing: '+id);}
+async function openAt(id,p=page){await close(p);await place(id,p);await p.waitForTimeout(100);const opened=await p.evaluate(id=>window.__vesper.interact(id),id);assert.equal(opened,true,'Cannot approach/interact: '+id);}
+async function click(id,p=page){await p.locator('#'+id).click({timeout:10000});}
+async function begin(p=page){await click('startButton',p);await p.waitForFunction(()=>window.__vesper.mode==='playing',null,{timeout:25000});}
+async function readPosition(p=page){return p.evaluate(()=>window.__vesper.player.position.toArray());}
+async function groundAt(x,z,p=page){await p.evaluate(({x,z})=>{window.__vesper.player.position.set(x,0,z);},{x,z});}
+async function noOverflow(p){assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'Horizontal page overflow');for(const selector of ['#startButton','#panelClose','#joystick','#playTape','#journalButton','#settingsButton']){const el=p.locator(selector);if(await el.isVisible()){const b=await el.boundingBox(),w=await p.evaluate(()=>innerWidth);assert.ok(b.x>=-1&&b.x+b.width<=w+1,selector+' out of bounds');}}}
+async function focusReset(){await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});}
 
-async function waitForServer() {
-  const deadline = Date.now() + 15000;
-  while (Date.now() < deadline) {
-    if (server.exitCode !== null) throw new Error(`Vesper test server exited: ${serverLog}`);
-    try { const response = await fetch(baseURL); if (response.ok) return; }
-    catch {}
-    await new Promise(resolve => setTimeout(resolve, 200));
-  }
-  throw new Error(`Vesper test server did not serve its page: ${serverLog}`);
-}
-async function ready(page) {
-  await page.waitForFunction(() => window.__vesper?.player && window.__vesper?.renderer, null, { timeout: 45000 });
-  await page.locator('#startButton:not([disabled])').waitFor({ timeout: 45000 });
-}
-async function begin(page) {
-  if (await page.locator('#startButton').isVisible()) await page.locator('#startButton').click();
-  await page.waitForFunction(() => document.getElementById('startButton')?.getBoundingClientRect().width === 0 || !document.getElementById('startButton')?.checkVisibility());
-}
-async function closePanel(page) {
-  if (await page.locator('#panelClose').isVisible()) await page.locator('#panelClose').click();
-}
-async function saveShot(page, name) {
-  await page.waitForTimeout(550);
-  await page.screenshot({ path: path.join(output, `vesper-${name}.png`), fullPage: true, timeout: 30000 });
-}
-async function moveTo(page, id) {
-  const fallback = { journal: [-7, 10], organ: [-6, -11], mirror: [7, -6], altar: [0, -13], exit: [0, 15] };
-  await page.evaluate(({ id, fallback }) => {
-    const qa = window.__vesper;
-    const known = qa.world.interactables?.find?.(target => target.id === id);
-    const p = known?.position || known;
-    const x = Number.isFinite(p?.x) ? p.x : fallback[id][0];
-    const z = Number.isFinite(p?.z) ? p.z : fallback[id][1];
-    qa.player.position.set(x, 0, z + (id === 'exit' ? -1.4 : 1.4));
-  }, { id, fallback });
-}
-async function openAt(page, id, keyboard = false) {
-  await closePanel(page);
-  await moveTo(page, id);
-  if (keyboard) {
-    await page.waitForTimeout(250);
-    await page.keyboard.press('e');
-  } else await page.evaluate(id => window.__vesper.interact(id), id);
-  await page.locator('#panelClose').waitFor({ state: 'visible' });
-}
-async function expectState(page, key, value = true) {
-  await page.waitForFunction(({ key, value }) => window.__vesper?.state?.[key] === value, { key, value });
-}
-async function noOverflow(page) {
-  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, 'Page must not overflow horizontally');
-  for (const selector of ['#startButton', '#panelClose', '#journalButton', '#settingsButton']) {
-    const locator = page.locator(selector);
-    if (await locator.isVisible()) {
-      const box = await locator.boundingBox();
-      const width = await page.evaluate(() => innerWidth);
-      assert.ok(box.x >= -1 && box.x + box.width <= width + 1, `${selector} must fit within screen width`);
-    }
-  }
+async function openingAndMovement(){
+ assert.equal(await page.evaluate(()=>window.__vesper.mode),'intro');
+ await page.waitForTimeout(1700);
+ await snapshot('01-opening');
+ const spawn=await page.evaluate(()=>window.__vesper.world.spawn.standing);
+ await page.keyboard.down('w');await page.waitForFunction(()=>window.__vesper.mode==='arrival');
+ await page.keyboard.down('w');await page.keyboard.press('ArrowUp');
+ await page.waitForFunction(()=>window.__vesper.mode==='playing',null,{timeout:25000});await page.keyboard.up('w');
+ const landed=await readPosition();assert.ok(Math.abs(landed[0]-spawn.x)<.001&&Math.abs(landed[2]-spawn.z)<.001,'Arrival input must not move the actor');
+ await page.waitForTimeout(350);assert.deepEqual(await readPosition(),landed);
+ assert.equal(await page.evaluate(()=>window.__vesper.sprint),false);
+ pass('opening: movement starts one arrival and cannot leak into walking');
+ const poseCheck=await page.evaluate(async()=>{
+  const {createNailong}=await import('./vesper/character.js'),live=window.__vesper.character,fresh=createNailong();
+  fresh.mixer.setTime(live.mixer.time);fresh.update(0,{moving:false,time:live.mixer.time});
+  const bones=['ArmL','ArmR','ElbowL','ElbowR','LegL','LegR','KneeL','KneeR'];
+  const differences=Object.fromEntries(bones.map(name=>[name,live.root.getObjectByName(name).quaternion.angleTo(fresh.root.getObjectByName(name).quaternion)]));
+  fresh.dispose();return {differences,scale:live.root.scale.toArray()};
+ });
+ assert.ok(Object.values(poseCheck.differences).every(angle=>angle<.015),'Opening pose must not accumulate or remain in resting limbs: '+JSON.stringify(poseCheck));
+ assert.deepEqual(poseCheck.scale,[1,1,1]);pass('opening limb overlay clears after idle dwell and arrival',poseCheck);
+ await snapshot('02-dark-sanctuary');
+ await groundAt(0,10);await focusReset();
+ await page.keyboard.press('w');await page.keyboard.down('ArrowUp');
+ assert.equal(await page.evaluate(()=>window.__vesper.sprint),false,'W -> Up is not a double tap');await page.keyboard.up('ArrowUp');
+ await focusReset();await page.keyboard.down('w');await page.keyboard.down('w');assert.equal(await page.evaluate(()=>window.__vesper.sprint),false,'Keyboard repeat must not sprint');await page.keyboard.up('w');
+ await focusReset();await page.keyboard.press('w');await page.keyboard.down('w');assert.equal(await page.evaluate(()=>window.__vesper.sprint),true);
+ await page.keyboard.up('w');assert.equal(await page.evaluate(()=>window.__vesper.sprint),false);
+ await focusReset();await page.keyboard.press('ArrowUp');await page.keyboard.down('ArrowUp');assert.equal(await page.evaluate(()=>window.__vesper.sprint),true);await page.keyboard.up('ArrowUp');
+ await focusReset();await page.keyboard.press('w');await page.keyboard.down('w');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
+ const paused=await readPosition();await page.waitForTimeout(300);assert.deepEqual(await readPosition(),paused);assert.equal(await page.evaluate(()=>window.__vesper.sprint),false);await page.keyboard.up('w');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+ pass('sprint: same-key double tap, release, repeat, mixed keys and blur clearing');
+ // Compare animation playback rate, computed from actual travelled distance, with the existing walk cycle.
+ async function rate(run){await groundAt(0,10);await focusReset();if(run)await page.keyboard.press('w');await page.keyboard.down('w');await page.waitForTimeout(700);const v=await page.evaluate(()=>{const q=window.__vesper;return q.character.mixer.existingAction(q.character.animations.find(a=>a.name==='Walk')).getEffectiveTimeScale();});await page.keyboard.up('w');return v;}
+ const walk=await rate(false),run=await rate(true);assert.ok(Math.abs(run/walk-1.7)<.04,`Walk/sprint ratio ${run/walk}`);pass('sprint speed remains 1.7 times base walking',{walk,run,ratio:run/walk});
+ await groundAt(0,1.5);await page.keyboard.down('d');await page.waitForTimeout(2500);await page.keyboard.up('d');const x=(await readPosition())[0];assert.ok(x>0&&x<1.8,'Pews must block movement');
+ await groundAt(-8.5,12);await page.keyboard.down('a');await page.waitForTimeout(700);await page.keyboard.up('a');assert.ok((await readPosition())[0]>=-8.74,'Outer wall collision');
+ pass('real keyboard movement stops at pews and outer wall');
 }
 
-async function inspectReturnAndCancellation(page) {
-  await page.evaluate(() => window.__vesper.player.position.set(0, 0, -7));
-  const before = await page.evaluate(() => window.__vesper.player.position.toArray());
-  await page.locator('#settingsButton').click();
-  await page.locator('#inspectModel').click();
-  await page.waitForFunction(() => window.__vesper.mode === 'model');
-  await page.locator('#walkPreview').click();
-  await page.waitForFunction(() => {
-    const character = window.__vesper.character;
-    return character.mixer.existingAction(character.animations.find(clip => clip.name === 'Walk')).getEffectiveWeight() > 0.3;
-  });
-  await closePanel(page);
-  await page.locator('#modelBack').click();
-  assert.equal(await page.evaluate(() => window.__vesper.mode), 'playing');
-  assert.deepEqual(await page.evaluate(() => window.__vesper.player.position.toArray()), before, 'Model inspection must restore the exact explorer position');
-  console.log('PASS model walking preview and return to exact explorer position');
-
-  await openAt(page, 'journal');
-  await openAt(page, 'organ');
-  await page.evaluate(() => {
-    for (const note of ['E', 'G', 'C']) document.querySelector(`[data-note="${note}"]`).click();
-    document.getElementById('clearNotes').click();
-  });
-  await page.waitForTimeout(600);
-  assert.equal(await page.evaluate(() => window.__vesper.state.organSolved), false, 'Clearing notes must cancel the queued melody result');
-  assert.match(await page.locator('#playedNotes').textContent(), /· · ·/);
-  await page.evaluate(() => {
-    for (const note of ['E', 'G', 'C']) document.querySelector(`[data-note="${note}"]`).click();
-    document.getElementById('panelClose').click();
-    window.__vesper.interact('organ');
-  });
-  await page.waitForTimeout(600);
-  assert.equal(await page.evaluate(() => window.__vesper.state.organSolved), false, 'Closing and reopening the organ must cancel its old result');
-  assert.match(await page.locator('#playedNotes').textContent(), /· · ·/);
-  console.log('PASS clear-notes and close/reopen both invalidate delayed organ answers');
-
-  await closePanel(page);
-  await page.locator('#settingsButton').click();
-  await page.locator('#resetButton').click();
-  await page.locator('#confirmReset').click();
-  await expectState(page, 'journalRead', false);
+async function modelReturn(){
+ await groundAt(0,5);const before=await page.evaluate(()=>{const q=window.__vesper;let material;q.character.root.traverse(o=>{if(o.material?.name==='Soft golden skin')material=o.material;});return {position:q.player.position.toArray(),rotation:q.player.rotation.toArray(),fov:q.camera.fov,map:material.envMap.uuid,intensity:material.envMapIntensity};});
+ await click('settingsButton');await click('inspectModel');await page.waitForFunction(()=>window.__vesper.mode==='model');await click('walkPreview');
+ await page.waitForFunction(()=>{const c=window.__vesper.character;return c.mixer.existingAction(c.animations.find(a=>a.name==='Walk')).getEffectiveWeight()>.3;});
+ await close();await click('modelBack');assert.equal(await page.evaluate(()=>window.__vesper.mode),'playing');
+ const after=await page.evaluate(()=>{const q=window.__vesper;let material;q.character.root.traverse(o=>{if(o.material?.name==='Soft golden skin')material=o.material;});return {position:q.player.position.toArray(),rotation:q.player.rotation.toArray(),fov:q.camera.fov,map:material.envMap.uuid,intensity:material.envMapIntensity};});
+ assert.deepEqual(after,before);pass('model walking preview restores position, facing, FOV and reflected light exactly');
 }
 
-async function touchMovementAndPause(page, context) {
-  const cdp = await context.newCDPSession(page);
-  const joystick = page.locator('#joystick');
-  await joystick.waitFor({ state: 'visible' });
-  const box = await joystick.boundingBox(), x = box.x + box.width / 2, y = box.y + box.height / 2;
-  const touch = async (type, points = []) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: points });
-  const point = y => [{ x, y, id: 1, radiusX: 1, radiusY: 1, force: 1 }];
-  await page.evaluate(() => window.__vesper.player.position.set(0, 0, 10));
-  await touch('touchStart', point(y));
-  await touch('touchMove', point(y - 32));
-  await page.waitForFunction(() => window.__vesper.player.position.z < 9.65, null, { timeout: 15000 });
-  await touch('touchEnd');
-  const stopped = await page.evaluate(() => window.__vesper.player.position.z);
-  await page.waitForTimeout(450);
-  assert.ok(Math.abs((await page.evaluate(() => window.__vesper.player.position.z)) - stopped) < 0.03, 'Releasing a real touch joystick must stop motion');
-
-  await touch('touchStart', point(y));
-  await touch('touchMove', point(y - 32));
-  await page.waitForFunction(z => window.__vesper.player.position.z < z - 0.2, stopped, { timeout: 15000 });
-  await page.evaluate(() => document.getElementById('journalButton').click());
-  const paused = await page.evaluate(() => window.__vesper.player.position.z);
-  await touch('touchEnd');
-  await page.waitForTimeout(350);
-  assert.equal(await page.evaluate(() => window.__vesper.player.position.z), paused, 'Opening a dialog pauses joystick movement');
-  await closePanel(page);
-  await page.waitForTimeout(450);
-  assert.equal(await page.evaluate(() => window.__vesper.player.position.z), paused, 'Closing a dialog must not resume a stale touch input');
-  await cdp.detach();
-  console.log('PASS real touch joystick movement, release, pause and resume without drift');
+async function firstPuzzle(){
+ await openAt('curtain');await click('pullCord');assert.equal((await state()).curtainOpened,false);assert.match(await page.locator('#panelBody').textContent(),/拉不动/);
+ await click('releaseCord');assert.equal((await state()).curtainReleased,true);await click('pullCord');assert.equal((await state()).curtainRaised,true);assert.equal((await state()).curtainOpened,false);await click('secureCord');await expect('curtainOpened');
+ await close();await snapshot('03-curtain-open');pass('curtain retry and release/raise/secure use actual buttons');
+ await openAt('programme');await expect('programmeCollected');assert.match(await page.locator('.paper').textContent(),/Experience/);assert.equal(await page.locator('.trace').textContent(),'····');
+ await openAt('window');await expect('patternRevealed');assert.equal(await page.locator('.trace span').nth(2).textContent(),'');await snapshot('04-programme-light');
+ await openAt('organ');assert.equal(await page.locator('.symbol-keys button').count(),3);assert.equal(await page.getByRole('button',{name:/休止|空拍/}).count(),0);
+ await click('startOrgan');await page.locator('[data-symbol="◇"]').click();await expect('organFailures',1);assert.equal((await state()).organSolved,false);
+ await close();assert.equal((await state()).organPlaying,false);await openAt('organ');await click('startOrgan');
+ for(const [beat,symbol]of [[0,'○'],[1,'△'],[2,null],[3,'◇']]){
+  await page.waitForFunction(beat=>window.__vesper.state.organPlaying&&window.__vesper.state.organBeat===beat,beat,{timeout:12000});
+  if(symbol)await page.locator('.symbol-keys [data-symbol="'+symbol+'"]').click();else assert.equal((await state()).organSolved,false);
+ }
+ await expect('organSolved');const solvedAt=Date.now();assert.equal((await state()).sideRoomUnlocked,false);await page.waitForTimeout(900);assert.equal((await state()).sideRoomUnlocked,false);await expect('sideRoomUnlocked');assert.ok(Date.now()-solvedAt>=1800);
+ await close();await snapshot('05-side-room-unlocked');pass('music: three symbol keys, real timed rest, retry and delayed two-second unlock');
 }
-(async () => {
-  let browser;
-  const errors = [];
-  try {
-    await waitForServer();
-    const executablePath = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-    browser = await playwright.chromium.launch({ executablePath, headless: true, args: ['--enable-unsafe-swiftshader'] });
-    fs.mkdirSync(output, { recursive: true });
-    const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
-    const page = await context.newPage();
-    page.on('pageerror', error => errors.push(error.message));
-    page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
-    await page.goto(baseURL);
-    await ready(page);
-    await saveShot(page, 'landing-desktop');
-    await begin(page);
-    await inspectReturnAndCancellation(page);
-    if (process.env.VESPER_TEST_FOCUSED === '1') {
-      const focusedMobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-      const focusedMobile = await focusedMobileContext.newPage();
-      focusedMobile.on('pageerror', error => errors.push(error.message));
-      await focusedMobile.goto(baseURL);
-      await ready(focusedMobile);
-      await begin(focusedMobile);
-      await touchMovementAndPause(focusedMobile, focusedMobileContext);
-      assert.deepEqual(errors, []);
-      await focusedMobileContext.close();
-      await context.close();
-      console.log('Vesper focused interaction regression passed.');
-      return;
-    }
 
-    const initial = await page.evaluate(() => ({ x: window.__vesper.player.position.x, z: window.__vesper.player.position.z }));
-    await page.keyboard.down('w');
-    try {
-      await page.waitForFunction(initial => {
-        const p = window.__vesper.player.position;
-        return Math.hypot(p.x - initial.x, p.z - initial.z) > 0.6;
-      }, initial, { timeout: 15000 });
-    } finally { await page.keyboard.up('w'); }
-    console.log('PASS actual WASD motion');
-    assert.equal(await page.evaluate(() => window.__vesper.interact('journal')), false, 'Cannot interact with remote props');
-    assert.equal(await page.evaluate(() => window.__vesper.state.journalRead), false);
-    const paths = await page.evaluate(() => {
-      const qa = window.__vesper, step = 0.2, visited = new Set(), queue = [[0, 50]], targets = { journal: [-7, 10], organ: [-6, -11], mirror: [7, -6], altar: [0, -13], exit: [0, 15] };
-      const reached = {};
-      visited.add('0,50');
-      for (let cursor = 0; cursor < queue.length; cursor++) {
-        const [ix, iz] = queue[cursor], x = ix * step, z = iz * step;
-        for (const [id, p] of Object.entries(targets)) if (Math.hypot(x - p[0], z - p[1]) < 2.15) reached[id] = true;
-        for (const [nx, nz] of [[ix + 1, iz], [ix - 1, iz], [ix, iz + 1], [ix, iz - 1]]) {
-          const key = `${nx},${nz}`;
-          if (!visited.has(key) && !qa.blocked(nx * step, nz * step)) { visited.add(key); queue.push([nx, nz]); }
-        }
-      }
-      return { reached, cells: visited.size };
-    });
-    assert.deepEqual(Object.keys(paths.reached).sort(), ['altar', 'exit', 'journal', 'mirror', 'organ'], 'Each story prop needs a navigable approach from the start');
-    console.log(`PASS walkable approaches to all five props (${paths.cells} reachable grid cells)`);
+async function archivePuzzle(){
+ await openAt('archive');await click('collect17');await click('collect18');assert.equal((await state()).b18TicketCollected,true);
+ await click('insert18');await click('lampButton');assert.equal(await page.locator('.projection').textContent(),'');await click('punchButton');assert.equal((await state()).b18Altered,true);assert.equal((await state()).routeBias.restore,1);assert.equal(await page.locator('.projection').textContent(),'○ × ↓');
+ await close();assert.equal((await state()).archiveInserted,null);assert.equal((await state()).b18TicketCollected,true);
+ await openAt('archive');await click('insert17');assert.equal(await page.locator('.projection').textContent(),'○ × ↓');await page.locator('[data-dial="1"]').click();await page.locator('[data-dial="2"]').click();await click('checkArchive');await expect('archiveDrawerSolved');
+ assert.equal((await state()).tapeCollected,true);assert.equal((await state()).brassKeyCollected,true);await snapshot('06-ticket-machine');
+ await click('ledgerButton');await expect('inspectedSeatLedger');assert.equal(await page.locator('.ledger tr').count(),30);
+ await close();await page.locator('[data-item="b18Ticket"]').click();await click('flipTicket');assert.equal((await state()).inspectedB18Date,false,'No date contradiction is recorded while B18 date is unconfigured');await close();
+ pass('ticket machine: blank B18, optional punch, automatic ejection, B17 projection and drawer');
+}
 
-    await page.evaluate(() => window.__vesper.player.position.set(1, 0, 1.5));
-    await page.keyboard.down('d');
-    try { await page.waitForFunction(() => window.__vesper.player.position.x > 1.55, null, { timeout: 15000 }); await page.waitForTimeout(900); }
-    finally { await page.keyboard.up('d'); }
-    const collisionX = await page.evaluate(() => window.__vesper.player.position.x);
-    assert.ok(collisionX > 1.2 && collisionX <= 1.71, `Pew collision must stop actual keyboard motion before x=1.71; got ${collisionX}`);
-    await page.evaluate(() => window.__vesper.player.position.set(8, 0, 13.5));
-    await page.keyboard.down('d');
-    try { await page.waitForTimeout(1200); }
-    finally { await page.keyboard.up('d'); }
-    assert.ok((await page.evaluate(() => window.__vesper.player.position.x)) <= 8.15, 'Outer walls must stop keyboard motion');
-    await page.evaluate(() => window.__vesper.player.position.set(0, 0, 8));
-    console.log('PASS furniture and outer-wall collision under actual keyboard input');
+async function tapePuzzle(){
+ await openAt('upperDoor');await page.waitForFunction(()=>window.__vesper.zone==='upper',null,{timeout:10000});await page.waitForTimeout(850);await openAt('clock');assert.match(await page.locator('#panelBody').textContent(),/指针停着/);await close();
+ await openAt('tapePlayer');await click('insertTape');await click('playTape');
+ await page.waitForFunction(()=>window.__vesper.state.tapePosition>.5);await click('stopTape');const stopped=(await state()).tapePosition;await page.waitForTimeout(350);assert.equal((await state()).tapePosition,stopped);
+ await click('playTape');await page.evaluate(()=>window.__vesper.advance(3));await close();await page.reload({waitUntil:'domcontentloaded',timeout:90000});await ready();
+ assert.equal((await state()).tapePlaying,false);assert.equal((await state()).tapeCollected,true);assert.equal((await state()).brassKeyCollected,true);await begin();await openAt('tapePlayer');
+ await click('rewindTape');await click('playTape');const started=Date.now();
+ // No advance() during this run: timecode/reels and chapter events are observed
+ // across a complete real-time recording, including the silent tail.
+ for(const [position,label]of [[12,'19:30:47'],[25,'19:31:00'],[29,'19:31:04'],[31,'19:31:06'],[33,'19:31:08']]){
+  await page.waitForFunction(n=>window.__vesper.state.tapePosition>=n,position,{timeout:90000});
+  const sample=await page.evaluate(()=>({position:window.__vesper.state.tapePosition,playing:window.__vesper.state.tapePlaying,code:document.getElementById('timecode').textContent,exitUnlocked:window.__vesper.state.exitUnlocked}));
+  assert.equal(sample.playing,true);assert.equal(sample.exitUnlocked,false);assert.ok(sample.code>=label);report.tapeSamples.push({...sample,wallSeconds:(Date.now()-started)/1000});
+  if(position===25){assert.ok(await page.locator('#cassette').evaluate(e=>e.classList.contains('playing')));await snapshot('07-tape-silent-reels');}
+ }
+ await expect('tapeCompleted');assert.ok(Date.now()-started>=34000,'Final recording may not be skipped');assert.equal(await page.locator('#timecode').textContent(),'19:31:10');assert.equal((await state()).exitUnlocked,true);assert.equal((await state()).chapterComplete,false);
+ pass('upper floor and real tape: reload pauses safely, reels survive silence, final note alone unlocks exit',{wallSeconds:(Date.now()-started)/1000});
+ await close();await openAt('downstairs');await page.waitForFunction(()=>window.__vesper.zone==='nave');await page.waitForTimeout(850);
+ await openAt('stone');assert.match(await page.locator('#panelBody').textContent(),/很冷/);assert.match(await page.locator('#panelBody').textContent(),/B18/);await close();await openAt('seatB18');assert.equal((await state()).chapterComplete,false);await close();
+ pass('unlocked chapter permits B18 and cold stone re-exploration');
+}
 
-    const avatar = page.locator('#playerAvatar .avatar-initial');
-    const firstGrapheme = await page.evaluate(() => [...new Intl.Segmenter('zh', { granularity: 'grapheme' }).segment(document.getElementById('playerName').value)][0].segment);
-    assert.equal((await avatar.textContent()).trim(), firstGrapheme, 'Default human avatar uses the first name grapheme');
-    const presence = page.locator('#playerAvatar .presence-dot');
-    assert.equal(await presence.getAttribute('data-connected'), 'true');
-    assert.equal(await presence.getAttribute('aria-label'), '在线 / Online');
-    assert.equal(await presence.evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(36, 151, 107)');
-    console.log('PASS shared avatar initial and green online presence');
-    await saveShot(page, 'gameplay-desktop');
+async function corridorEnd(){
+ await openAt('exit');await expect('exitOpened');assert.equal((await state()).chapterComplete,false);await close();
+ await groundAt(0,15.1);
+ // Turn the view towards the rear door, then use the actual double-W sprint.
+ await page.mouse.move(800,380);await page.mouse.down();await page.mouse.move(276.4,380,{steps:8});await page.mouse.up();
+ await page.keyboard.press('w');await page.keyboard.down('w');
+ await page.waitForFunction(()=>window.__vesper.state.corridorEntered,null,{timeout:20000});await page.keyboard.up('w');assert.equal((await state()).chapterComplete,false);await snapshot('08-corridor-entered');
+ await click('settingsButton');const pausedDoor=await page.evaluate(()=>window.__vesper.world.door.rotation.y);await page.waitForTimeout(500);
+ assert.equal(await page.evaluate(()=>window.__vesper.world.door.rotation.y),pausedDoor,'Paused world must not continue the closing door animation');await close();
+ await page.waitForFunction(()=>window.__vesper.world.doorOpening<.02,null,{timeout:12000});
+ assert.equal(await page.evaluate(()=>window.__vesper.blocked(0,15.9)),true,'Closed corridor door must regain collision');
+ await page.reload({waitUntil:'domcontentloaded',timeout:90000});await ready();assert.equal((await state()).corridorEntered,true);await begin();
+ assert.equal(await page.evaluate(()=>window.__vesper.zone),'corridor');await page.waitForTimeout(600);
+ assert.ok(await page.evaluate(()=>window.__vesper.world.doorOpening<.02),'Reloaded corridor must keep the church door closed');
+ assert.equal(await page.evaluate(()=>window.__vesper.blocked(0,15.9)),true);
+ pass('closing doorway pauses with settings and remains closed/collidable after corridor reload');
+ await page.keyboard.press('w');await page.keyboard.down('w');
+ try{await page.waitForFunction(()=>window.__vesper.mode==='won',null,{timeout:65000});}finally{await page.keyboard.up('w');}
+ await page.locator('#chapterEnd').waitFor({state:'visible'});assert.equal((await state()).chapterComplete,true);const end=await readPosition();assert.ok(end[2]>37);await snapshot('09-chapter-end');
+ pass('corridor: normal sprint enters, closes door, and ends only beyond the distant threshold',{endPosition:end});
+}
 
-    await openAt(page, 'journal', true);
-    await expectState(page, 'journalRead');
-    assert.match(await page.locator('dialog[open]').textContent(), /E、G、C|E.*G.*C/);
-    await openAt(page, 'organ');
-    for (const note of ['C', 'C', 'C']) await page.locator(`[data-note="${note}"]`).click();
-    await page.waitForFunction(() => document.getElementById('panelBody').textContent.includes('机关没有回应'));
-    assert.equal(await page.evaluate(() => window.__vesper.state.organSolved), false);
-    await closePanel(page);
-    await openAt(page, 'organ');
-    for (const note of ['E', 'G', 'C']) await page.locator(`[data-note="${note}"]`).click();
-    await expectState(page, 'organSolved');
-    console.log('PASS journal and organ UI, including a wrong melody retry');
+async function mobileChecks(){
+ const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'}),p=await setup(context);
+ for(const width of [320,390]){await p.setViewportSize({width,height:width===320?740:844});await noOverflow(p);}await snapshot('10-opening-mobile',p);await begin(p);
+ const cdp=await context.newCDPSession(p),stick=p.locator('#joystick');await stick.waitFor({state:'visible'});const b=await stick.boundingBox(),x=b.x+b.width/2,y=b.y+b.height/2;
+ const send=(type,points=[])=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points});const finger=yy=>[{x,y:yy,id:1,radiusX:1,radiusY:1,force:1}];
+ await groundAt(0,10,p);await send('touchStart',finger(y));await send('touchMove',finger(y-32));await p.waitForFunction(()=>window.__vesper.player.position.z<9.75,null,{timeout:15000});await send('touchCancel');const canceled=await readPosition(p);await p.waitForTimeout(300);assert.deepEqual(await readPosition(p),canceled);
+ await send('touchStart',finger(y));await send('touchMove',finger(y-32));await p.waitForFunction(z=>window.__vesper.player.position.z<z-.15,canceled[2]);await p.evaluate(()=>document.getElementById('journalButton').click());const paused=await readPosition(p);await send('touchEnd');await p.waitForTimeout(300);assert.deepEqual(await readPosition(p),paused);await close(p);await p.waitForTimeout(300);assert.deepEqual(await readPosition(p),paused);
+ await openAt('curtain',p);await noOverflow(p);await snapshot('11-mobile-curtain',p);await close(p);
+ pass('mobile: 320/390 bounds, real joystick cancel, modal pause and no stale movement');
+ await cdp.detach();await context.close();
+}
 
-    await page.reload();
-    await ready(page);
-    await expectState(page, 'organSolved');
-    await begin(page);
-    console.log('PASS saved puzzle state survives reload');
-
-    await openAt(page, 'mirror');
-    await expectState(page, 'lensInstalled');
-    await page.locator('[data-angle="30"]').click();
-    assert.equal(await page.evaluate(() => window.__vesper.state.beamAligned), false);
-    await closePanel(page);
-    await openAt(page, 'mirror');
-    await page.locator('[data-angle="60"]').click();
-    await expectState(page, 'beamAligned');
-    await saveShot(page, 'light-aligned');
-    await openAt(page, 'altar');
-    await expectState(page, 'keyTaken');
-    await openAt(page, 'exit');
-    await expectState(page, 'escaped');
-    assert.match(await page.locator('dialog[open]').textContent(), /奶龙胜利/);
-    await saveShot(page, 'ending');
-    console.log('PASS reflector, altar, exit and named winner');
-
-    await closePanel(page);
-    await page.locator('#journalButton').click();
-    assert.match(await page.locator('dialog[open]').textContent(), /手记|笔记/);
-    await closePanel(page);
-    await page.locator('#settingsButton').click();
-    await page.locator('#panelClose').waitFor();
-    await closePanel(page);
-
-    // Corrupt only this game's save, discovered by its canonical puzzle field.
-    const saveKeys = await page.evaluate(() => Object.keys(localStorage).filter(key => {
-      const value = localStorage.getItem(key) || '';
-      return /vesper/i.test(key) && /journalRead/.test(value);
-    }));
-    assert.ok(saveKeys.length, 'The chapter must persist its progress in localStorage');
-    await page.evaluate(keys => keys.forEach(key => localStorage.setItem(key, '{malformed')), saveKeys);
-    await page.reload();
-    await ready(page);
-    assert.equal(await page.evaluate(() => window.__vesper.state.journalRead), false);
-    assert.equal(await page.evaluate(() => window.__vesper.state.escaped), false);
-    console.log('PASS malformed save recovers safely');
-
-    const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-    const mobile = await mobileContext.newPage();
-    mobile.on('pageerror', error => errors.push(error.message));
-    await mobile.goto(baseURL);
-    await ready(mobile);
-    for (const width of [320, 390]) {
-      await mobile.setViewportSize({ width, height: width === 320 ? 740 : 844 });
-      await noOverflow(mobile);
-      await saveShot(mobile, `landing-mobile-${width}`);
-    }
-    await begin(mobile);
-    await touchMovementAndPause(mobile, mobileContext);
-    await noOverflow(mobile);
-    await openAt(mobile, 'journal');
-    await noOverflow(mobile);
-    await saveShot(mobile, 'journal-mobile');
-    await closePanel(mobile);
-    await saveShot(mobile, 'gameplay-mobile');
-    console.log('PASS mobile landing, gameplay and dialog bounds');
-    assert.deepEqual(errors, [], 'Browser should have no script or console errors');
-    console.log('Vesper browser regression passed. Screenshots: test-results/vesper-*.png');
-    await mobileContext.close();
-    await context.close();
-  } finally {
-    if (browser) await browser.close();
-    server.kill();
-  }
-})().catch(error => { console.error(error); process.exitCode = 1; });
-
-
-
-
-
+(async()=>{
+ fs.mkdirSync(output,{recursive:true});
+ try{
+  server=spawn(process.execPath,[path.join(root,'server.js')],{cwd:root,env:{...process.env,PORT:String(port),LOCAL_ONLY:'1'},stdio:['ignore','pipe','pipe'],windowsHide:true});server.stdout.on('data',d=>serverLog+=d);server.stderr.on('data',d=>serverLog+=d);await waitServer();
+  browser=await playwright.chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--enable-unsafe-swiftshader']});
+  const context=await browser.newContext({viewport:{width:1280,height:800}});page=await setup(context);
+  await openingAndMovement();await modelReturn();await firstPuzzle();await archivePuzzle();await tapePuzzle();await corridorEnd();await mobileChecks();
+  assert.deepEqual(report.errors,[],'Browser errors');report.status='passed';await context.close();console.log('Chapter I regression passed.');
+ }catch(error){report.status='failed';report.failure={message:error.message,stack:error.stack};if(page){try{report.lastState=await state();report.lastMode=await page.evaluate(()=>window.__vesper?.mode);report.focusPaused=await page.evaluate(()=>window.__vesper?.focusPaused);await snapshot('failure');}catch{}}console.error(error);process.exitCode=1;
+ }finally{report.finished=new Date().toISOString();fs.writeFileSync(path.join(output,'report.json'),JSON.stringify(report,null,2));if(browser)await browser.close();if(server)server.kill();}
+})();

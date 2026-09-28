@@ -1,0 +1,179 @@
+{
+  "sampleRate": 22050,
+  "channels": 1,
+  "format": "PCM 16 bit WAV",
+  "provenance": "Original deterministic procedural synthesis. No external recordings, speech, or copyrighted compositions. realityChair is synthetic foley, not a field recording.",
+  "assets": {
+    "stone": {
+      "file": "stone.wav",
+      "seconds": 1.95,
+      "peak": 0.24,
+      "rms": 0.02643,
+      "bytes": 86040,
+      "sha256": "1bbe04cca9f3af13e5a4e017633143f99c363b31ba02ba6c46c9884cf687e4c3",
+      "loop": false
+    },
+    "terminalChime": {
+      "file": "terminalChime.wav",
+      "seconds": 3.85,
+      "peak": 0.4,
+      "rms": 0.07246,
+      "bytes": 169828,
+      "sha256": "62a020e8456a5bbb51b8bb27c2267caedd565e1b6fcf33fb983ffc2a93b6516d",
+      "loop": false
+    },
+    "realityChair": {
+      "file": "realityChair.wav",
+      "seconds": 3.95,
+      "peak": 0.43,
+      "rms": 0.06325,
+      "bytes": 174240,
+      "sha256": "1e8a969a2f9118797cf09e6596838f5866e3feaface4d11e17820023c5920673",
+      "loop": false
+    },
+    "paper": {
+      "file": "paper.wav",
+      "seconds": 2.1,
+      "peak": 0.37,
+      "rms": 0.03678,
+      "bytes": 92654,
+      "sha256": "8d80e95b7a70e99639ceb4e37e70f0a11b39b5347a66e95dd4bd427625cb53b1",
+      "loop": false
+    },
+    "cloth": {
+      "file": "cloth.wav",
+      "seconds": 2.25,
+      "peak": 0.29,
+      "rms": 0.02875,
+      "bytes": 99268,
+      "sha256": "2f88edad5bcf9934efeb360eb78a2be1f8c2ac38d63cbd677f8df2f5e7291061",
+      "loop": false
+    },
+    "latch": {
+      "file": "latch.wav",
+      "seconds": 1.62,
+      "peak": 0.43,
+      "rms": 0.03772,
+      "bytes": 71486,
+      "sha256": "2ddbfd05ce0f374790d357aa615a940ddaf72b9b4bf499cacba928c0d773a327",
+      "loop": false
+    },
+    "cup": {
+      "file": "cup.wav",
+      "seconds": 1.8,
+      "peak": 0.35,
+      "rms": 0.02527,
+      "bytes": 79424,
+      "sha256": "b61a34a04ad87217ba6193a503156b95bfa318fe7eb6c4de6f172ead7b123ce6",
+      "loop": false
+    },
+    "breath": {
+      "file": "breath.wav",
+      "seconds": 1.9,
+      "peak": 0.18,
+      "rms": 0.01599,
+      "bytes": 83834,
+      "sha256": "c46ac18e8fa5bad7ed12a87dc181a9635d2d14053f937b4c329ef8f9a1c875b9",
+      "loop": false
+    },
+    "tapeStart": {
+      "file": "tapeStart.wav",
+      "seconds": 1.66,
+      "peak": 0.36,
+      "rms": 0.0278,
+      "bytes": 73250,
+      "sha256": "6265fee69bdf033f1a25dc2eeca6510ef3619decaed616f907022e386637606e",
+      "loop": false
+    },
+    "tapeStop": {
+      "file": "tapeStop.wav",
+      "seconds": 1.66,
+      "peak": 0.36,
+      "rms": 0.02746,
+      "bytes": 73250,
+      "sha256": "1b3a78f602ea07558a2ee2686a90413d9929de9d234c344b320e838ae792de6b",
+      "loop": false
+    },
+    "curtain": {
+      "file": "curtain.wav",
+      "seconds": 3.7,
+      "peak": 0.34,
+      "rms": 0.03217,
+      "bytes": 163214,
+      "sha256": "4e2c4423c2feeb421aab78567a25808519ca518269ed679127679e62c250e5fc",
+      "loop": false
+    },
+    "door": {
+      "file": "door.wav",
+      "seconds": 3.3,
+      "peak": 0.45,
+      "rms": 0.04173,
+      "bytes": 145574,
+      "sha256": "ad4e9576deaa2ce9e3d519ff2e9d70c62ee80c81924f594906e266e79ee4cae0",
+      "loop": false
+    },
+    "footstep": {
+      "file": "footstep.wav",
+      "seconds": 1.48,
+      "peak": 0.31,
+      "rms": 0.02923,
+      "bytes": 65312,
+      "sha256": "20b76c67c9ff850ac3c469088e095d81804959b6b0fccd6d4a761f0bf2d7b9a3",
+      "loop": false
+    },
+    "organFail": {
+      "file": "organFail.wav",
+      "seconds": 2.1,
+      "peak": 0.24,
+      "rms": 0.03423,
+      "bytes": 92654,
+      "sha256": "858ac4c2a0129d7e2d964510422af32ecce19e34489293ae94da9549b253df62",
+      "loop": false
+    },
+    "organCircle": {
+      "file": "organCircle.wav",
+      "seconds": 2.4,
+      "peak": 0.37,
+      "rms": 0.0855,
+      "bytes": 105884,
+      "sha256": "a99c6ea20180648709ca2d0642e260e0fb19838376b27d7f4f1a261b40c0fd1a",
+      "loop": false
+    },
+    "organTriangle": {
+      "file": "organTriangle.wav",
+      "seconds": 2.4,
+      "peak": 0.37,
+      "rms": 0.07251,
+      "bytes": 105884,
+      "sha256": "f16e7a990602dd0b5cd283de4c125becdcf4eebdb66d22655b45e3279cb874de",
+      "loop": false
+    },
+    "organDiamond": {
+      "file": "organDiamond.wav",
+      "seconds": 2.4,
+      "peak": 0.37,
+      "rms": 0.08146,
+      "bytes": 105884,
+      "sha256": "f046c2ed40ec63412a56d2cd0cd744bebbb90218b7c7d87432dfc674b059a277",
+      "loop": false
+    },
+    "pianoLast": {
+      "file": "pianoLast.wav",
+      "seconds": 3.45,
+      "peak": 0.34,
+      "rms": 0.05902,
+      "bytes": 152188,
+      "sha256": "3261b27375677f14dcd71f8815c4e0dbf60fcb11368a15bb4f1ccf20e59b305c",
+      "loop": false
+    },
+    "tapeMotor": {
+      "file": "tapeMotor.wav",
+      "seconds": 2.0,
+      "peak": 0.065,
+      "rms": 0.02623,
+      "bytes": 88244,
+      "sha256": "b547cf5ddd44344d70f419785efdf3f986723fc3b5ba113acb11ace75b141311",
+      "loop": true
+    }
+  }
+}

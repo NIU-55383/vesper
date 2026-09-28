@@ -1,0 +1,68 @@
+{
+  "browser": {
+    "passed": true,
+    "nativeBrowser": "Chrome Web Audio",
+    "decoded": 19,
+    "created": 1,
+    "played": [
+      {
+        "id": "paper",
+        "ok": true
+      },
+      {
+        "id": "cloth",
+        "ok": true
+      },
+      {
+        "id": "organ○",
+        "ok": true
+      },
+      {
+        "id": "organ△",
+        "ok": true
+      },
+      {
+        "id": "organ◇",
+        "ok": true
+      },
+      {
+        "id": "terminalChime",
+        "ok": true
+      },
+      {
+        "id": "realityChair",
+        "ok": true
+      }
+    ],
+    "pausedState": "suspended",
+    "noMutedStart": true,
+    "silenceNoMotor": true,
+    "started": 8,
+    "stopped": 8,
+    "finalState": "closed",
+    "errors": []
+  },
+  "lifecycle": {
+    "passed": true,
+    "assets": 19,
+    "maxConcurrent": 1,
+    "checks": [
+      "gesture gating",
+      "serial loading",
+      "19 cue IDs and aliases",
+      "voice cap",
+      "footstep cooldown",
+      "mute stops",
+      "zero volume stops",
+      "pause stops",
+      "background stops",
+      "no replay on resume",
+      "no late-loaded cue playback",
+      "one reel loop",
+      "silence after 25 sec",
+      "no narrative event dispatch",
+      "missing assets nonfatal",
+      "dispose cleanup"
+    ]
+  }
+}
