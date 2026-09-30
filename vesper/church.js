@@ -464,7 +464,10 @@ export function buildChurch(scene) {
   naturalShafts.push(...shaft([-8.84, 8.8, .25], [5.4, .25, -7.1], 1.7, .042));
   naturalShafts.push(...shaft([-8.84, 9.7, 6.02], [5.5, .25, -1.7], 1.8, .038));
   naturalShafts.push(...shaft([-8.84, 9.1, 11.75], [4.9, .3, 4.1], 1.6, .035));
-  for (const object of naturalShafts) { object.userData.baseOpacity = object.material.uniforms.uOpacity.value; object.material.uniforms.uOpacity.value = 0; }
+  const closedShaftColour = new THREE.Color('#bca8d2');
+  const closedKeyColour = new THREE.Color('#b4a4dc'), openKeyColour = keyLight.color.clone();
+  const closedCrossColour = new THREE.Color('#b6a7d2'), openCrossColour = crossLight.color.clone();
+  for (const object of naturalShafts) { object.userData.baseOpacity = object.material.uniforms.uOpacity.value; object.userData.openColour = object.material.uniforms.uColor.value.clone(); object.material.uniforms.uOpacity.value = 0; }
   const reflectedShafts = shaft([7.4, 1.79, -6.1], [0, 7.2, -15.28], .19, .23);
   reflectedShafts.forEach(o => { o.visible = false; });
   const reflectedLight = new THREE.SpotLight('#d6d3fb', 0, 18, .065, .4, 1.2);
@@ -540,8 +543,9 @@ export function buildChurch(scene) {
   }
   reflectedShafts.forEach(o => { o.visible = false; });
 
-  // Heavy pleated curtains cover every upper window at the opening. Only the
-  // left set is connected to the physical release/lift/hook mechanism.
+  // Left curtains keep a narrow daylight seam before the release/lift/hook
+  // sequence. Their logical state still starts fully latched; the seam is a
+  // physical imperfection, not a shortcut around the three-step mechanism.
   function makeCurtain(side, z, centreY = 9.34, height = 4.94, width = 2.58, x = side * 8.82) {
     const rig = new THREE.Group(); rig.position.set(x, centreY, z); rig.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2; chapter.add(rig);
     for (const leafSide of [-1, 1]) {
@@ -886,20 +890,26 @@ export function buildChurch(scene) {
     const delta = Math.min(dt || .016, .1);
     curtainProgress = THREE.MathUtils.damp(curtainProgress, curtainTarget, 1.7, delta);
     for (const panel of curtainPanels) {
-      const opening = panel.userData.side < 0 ? curtainProgress : 0;
+      const opening = panel.userData.side < 0 ? .24 + .76 * curtainProgress : 0;
       panel.scale.x = 1 - opening * .81;
       panel.position.x = panel.userData.leafSide * panel.userData.width * (.25 + opening * .2);
     }
-    const daylight = curtainProgress * introFade;
-    ambient.intensity = (.31 + .72 * curtainProgress) * introFade;
-    frontFill.intensity = (.075 + .405 * curtainProgress) * introFade;
+    const daylight = (.60 + .40 * curtainProgress) * introFade;
+    ambient.intensity = (.72 + .31 * curtainProgress) * introFade;
+    frontFill.intensity = (.30 + .18 * curtainProgress) * introFade;
     keyLight.intensity = 2.7 * daylight; crossLight.intensity = 110 * daylight;
+    keyLight.color.copy(closedKeyColour).lerp(openKeyColour, curtainProgress);
+    crossLight.color.copy(closedCrossColour).lerp(openCrossColour, curtainProgress);
     glassMat.emissiveIntensity = .018 + .382 * daylight;
     stainedBase.emissiveIntensity = .015 + .48 * daylight;
     paneGlint.intensity = 3.8 * daylight;
     windowLights.forEach(light => { light.intensity = 15 * daylight; });
-    naturalShafts.forEach(object => { object.material.uniforms.uOpacity.value = object.userData.baseOpacity * daylight; });
-    dust.visible = daylight > .06;
+    naturalShafts.forEach(object => {
+      object.scale.x = .62 + .38 * curtainProgress;
+      object.material.uniforms.uOpacity.value = object.userData.baseOpacity * (.78 + .22 * curtainProgress) * introFade;
+      object.material.uniforms.uColor.value.copy(closedShaftColour).lerp(object.userData.openColour, curtainProgress);
+    });
+    dust.visible = introFade > .001;
     altarLight.intensity = (1.8 + Math.sin(time * 5.1) * .09) * introFade;
     deskLight.intensity = 0;
     archiveAmbient.intensity = (chapterState.sideRoomUnlocked ? 6.5 : 2) * introFade;

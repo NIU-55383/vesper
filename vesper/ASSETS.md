@@ -8,7 +8,7 @@
 | --- | --- |
 | `assets/nailong.glb` | 奶龙独立角色；全身连续蒙皮梨形身体、圆顶头部、薄唇、小型近圆绿色眼睛、微垂眼睑与渐变深色手足及命名骨骼；`Idle` / `Walk` 动画。 |
 | `assets/church.glb` | 第一章教堂建筑、Stall B 座位、帘幕、档案侧室、票据机、上层维护区、19:31 大钟及灰紫长廊；可导出的材质、贴图及灯光。 |
-| `assets/chapter-one-opening.jpg` / `assets/chapter-one-sanctuary.jpg` | 当前真实 WebGL 开场与开帘后教堂预览。 |
+| `assets/chapter-one-opening.jpg` / `assets/chapter-one-initial-light.jpg` / `assets/chapter-one-sanctuary.jpg` | 本轮同步的高画质 WebGL 黑底顶光开场、初始紫光与开帘后教堂预览。 |
 | `import_into_blender.py` | Blender 4.2+ 的导入、相机、场景保存与可选静帧渲染脚本。 |
 
 角色模型的来源是程序化建模。当前第 7 版在第 6 版的白底托肚参考基础上，放缓头颈过渡、内收肘部、缩短腹斑下缘，改为拇指加三根粗短手指，压低并前伸脚掌，降低眼部厚度和高光。详见 [修改参数与验收](REMODEL-v7.md) 和 [四向前后对照](review.html)。参考图仅供本机建模对照，没有作为游戏素材发布；未使用下载的第三方模型。教堂是参考照片的艺术化重构，建筑来源与差异见 architecture-notes.md。
@@ -48,7 +48,7 @@ blender --background --python vesper/import_into_blender.py -- --asset church --
 - 教堂优先沿用 GLB 中的灯光，增加低强度紫灰环境光；GLB 完全没有灯光时才增加侧窗备用面光。独立角色模式添加独立的柔光摄影灯和地面。
 - 提供中央过道、楼廊、角色三个相机；静帧默认 1600 × 1000。默认使用 Eevee，`--engine cycles` 可切换 Cycles。两种引擎的材质和灯光外观需要在本机 Blender 中进一步检查。
 - `Idle` 与 `Walk` 是可导出的动画片段。游戏中的混合控制、程序化眨眼以及输入驱动的走位属于浏览器运行时逻辑，不会变成 GLB 动画。
-- Three.js 雾、后处理、实时尘埃和自定义光束着色器无法完整存入标准 GLB。Blender 中的体积雾和最终调色需要另行设置，不能把脚本导入结果当作与网页逐像素相同的离线渲染。
+- Three.js 雾、后处理、实时尘埃、自定义光束着色器及开场双 Scene 的 HDR 画面混合无法完整存入标准 GLB。黑底顶光开场与教堂的溶解在 bloom 前完成，属于浏览器运行时效果。Blender 中的体积雾和最终调色需要另行设置，不能把脚本导入结果当作与网页逐像素相同的离线渲染。
 - 脚本不运行游戏谜题、不修改源代码，也不自动安装或下载 Blender。
 
 实现依据：[Blender glTF 手册](https://docs.blender.org/manual/en/5.0/addons/import_export/scene_gltf2.html)、[导入操作 API](https://docs.blender.org/api/main/bpy.ops.import_scene.html)、[官方导入器坐标转换源码](https://github.com/blender/blender/blob/main/scripts/addons_core/io_scene_gltf2/blender/imp/blender_gltf.py)。
@@ -78,6 +78,8 @@ blender --background --python vesper/import_into_blender.py -- --asset church --
 
 ## 第一章场景资源同步
 
-本轮重新导出 `assets/church.glb`（5,949,660 字节），加入窗帘、B17/B18、侧室验证器、上层磁带区与出口长廊。导出保持可见建筑和可表示的材质、灯光；谜题机关由网页状态机驱动，不作为 GLB 动画导出。奶龙网格及 Idle / Walk 沿用第 10 轮资源，开场悬浮姿态只在运行时临时叠加并在接管后还原。
+第一章导出的 assets/church.glb 包含窗帘、B17/B18、侧室验证器、上层磁带区与出口长廊，以及可表示的材质和灯光。谜题机关由网页状态机驱动，不作为 GLB 动画导出。奶龙网格及 Idle / Walk 沿用第 10 轮资源；本次开场调整没有修改角色网格、骨骼或动画资产。
 
-开场体积光、雾、尘埃与后处理仍属于网页效果，不属于 GLB 标准材质。已检查 GLB 头、长度与场景节点；本轮也未执行 Blender 导入验证。
+当前开场在独立黑底场景中保留原竖直顶光、悬浮构图和 160 粒尘埃。首次移动先靠近、落地并对齐镜头与姿态，再整幅渐变进入初始已有 60% 左窗紫光、透光帘缝和原 900 粒随机尘埃的教堂。悬浮、落地、场景混合及后处理均由浏览器运行时控制，不作为 GLB 资源导出。
+
+此前已检查教堂 GLB 的文件头、长度与场景节点，尚未执行 Blender 导入验证。本轮没有重新导出 GLB，沿用此前的教堂结构资产；三张高画质网页预览已同步。开场浏览器专项 13 项通过、页面错误列表为空，报告与过程截图位于 test-results/opening-dissolve/；减弱动态分支仅经代码审查，未作本轮浏览器实测。
